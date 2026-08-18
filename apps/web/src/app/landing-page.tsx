@@ -1,11 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { Manrope } from "next/font/google";
 import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { manrope } from "@/lib/fonts";
 
 /**
  * **The landing page.**
@@ -33,8 +33,8 @@ import { ThemeToggle } from "@/components/theme-toggle";
  *   these sections are lit correctly in both without a `dark:` in sight.
  *
  * **It is set in Manrope throughout, tight.** The rest of the app is Geist;
- * this page alone loads Manrope, via `next/font` at module scope, and applies
- * it on its own root so nothing outside `/` changes family. A poster wants one
+ * this page and the auth screens take Manrope (`lib/fonts.ts`), applied on
+ * their own roots so nothing behind the login changes family. A poster wants one
  * voice, so it is one family here too — what makes the type read as *designed*
  * rather than as default is not a second family but negative tracking
  * (-0.045em on the headline, -0.035em on the section heads) and leading near
@@ -45,16 +45,6 @@ import { ThemeToggle } from "@/components/theme-toggle";
  * documented as categorical and meaningless — four unrelated things wanting four
  * unrelated colours is exactly what that set exists for.
  */
-
-/**
- * Landing-page only. Loaded here rather than in `app/layout.tsx` so the family
- * ships with this route and nowhere else; the class goes on the page's root and
- * everything inside inherits it (preflight gives buttons `font: inherit`).
- */
-const manrope = Manrope({
-  subsets: ["latin"],
-  display: "swap",
-});
 
 const PROVIDERS = [
   "Stripe",

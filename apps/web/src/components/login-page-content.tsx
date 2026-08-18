@@ -15,8 +15,8 @@ export function LoginPageContent({
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-lg font-semibold tracking-tight">Welcome back</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <h1 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em]">Welcome back</h1>
+        <p className="mt-1.5 text-[13px] text-muted-foreground">
           Enter your credentials to continue
         </p>
         {message === "signups-disabled" && (
@@ -29,14 +29,14 @@ export function LoginPageContent({
       <SignInForm />
 
       {signupsEnabled ? (
-        <p className="mt-5 text-center text-[11px] text-muted-foreground">
+        <p className="mt-6 text-center text-[13px] text-muted-foreground">
           No account?{" "}
-          <Link href="/signup" className="text-foreground hover:underline font-medium">
+          <Link href="/signup" className="font-medium text-fl-green hover:underline">
             Sign up
           </Link>
         </p>
       ) : (
-        <p className="mt-5 text-center text-[11px] text-muted-foreground">
+        <p className="mt-6 text-center text-[13px] text-muted-foreground">
           Registration is currently closed.
         </p>
       )}

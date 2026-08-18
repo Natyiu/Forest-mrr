@@ -42,15 +42,15 @@ export default function ResetPasswordPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-lg font-semibold tracking-tight">New password</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <h1 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em]">New password</h1>
+        <p className="mt-1.5 text-[13px] text-muted-foreground">
           Choose a new password for your account
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="password" className="text-[11px]">
+          <Label htmlFor="password" className="text-[13px]">
             New Password
           </Label>
           <Input
@@ -60,11 +60,11 @@ export default function ResetPasswordPage() {
             onChange={(e) => setPassword(e.target.value)}
             placeholder="Min 8 characters"
             required
-            className="h-8 text-xs"
+            className="h-11 rounded-xl text-[14px]"
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="confirm" className="text-[11px]">
+          <Label htmlFor="confirm" className="text-[13px]">
             Confirm Password
           </Label>
           <Input
@@ -74,12 +74,12 @@ export default function ResetPasswordPage() {
             onChange={(e) => setConfirm(e.target.value)}
             placeholder="Repeat password"
             required
-            className="h-8 text-xs"
+            className="h-11 rounded-xl text-[14px]"
           />
         </div>
         <Button
           type="submit"
-          className="w-full h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+          className="h-12 w-full rounded-xl bg-fl-green text-[15px] font-medium text-white shadow-lg shadow-green-600/20 hover:bg-fl-green/90"
           disabled={resetting || !password || !confirm}
         >
           {resetting ? "Resetting..." : "Reset Password"}
@@ -89,7 +89,7 @@ export default function ResetPasswordPage() {
       <div className="mt-5 text-center">
         <Link
           href="/login"
-          className="text-[11px] text-muted-foreground hover:text-foreground transition-colors"
+          className="text-[13px] font-medium text-fl-green transition-colors hover:underline"
         >
           Back to login
         </Link>

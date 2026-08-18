@@ -41,11 +41,11 @@ export default function ForgotPasswordPage() {
           <Mail className="h-3.5 w-3.5 text-foreground/60" />
         </div>
         <h2 className="text-sm font-semibold tracking-tight">Check your email</h2>
-        <p className="text-[11px] text-muted-foreground mt-1">
+        <p className="mt-1.5 text-[13px] text-muted-foreground">
           We sent a password reset link to <strong className="text-foreground">{email}</strong>.
         </p>
         <Link href="/login" className="inline-block mt-5">
-          <Button variant="ghost" size="sm" className="text-[11px] h-7 gap-1.5">
+          <Button variant="ghost" size="sm" className="h-8 gap-1.5 text-[13px] text-fl-green hover:text-fl-green">
             <ArrowLeft className="h-3 w-3" />
             Back to login
           </Button>
@@ -57,15 +57,15 @@ export default function ForgotPasswordPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-lg font-semibold tracking-tight">Reset password</h1>
-        <p className="text-xs text-muted-foreground mt-0.5">
+        <h1 className="text-[26px] font-bold leading-[1.1] tracking-[-0.03em]">Reset password</h1>
+        <p className="mt-1.5 text-[13px] text-muted-foreground">
           Enter your email and we&apos;ll send you a reset link
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-1.5">
-          <Label htmlFor="email" className="text-[11px]">
+          <Label htmlFor="email" className="text-[13px]">
             Email
           </Label>
           <Input
@@ -75,12 +75,12 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-8 text-xs"
+            className="h-11 rounded-xl text-[14px]"
           />
         </div>
         <Button
           type="submit"
-          className="w-full h-8 text-xs bg-primary text-primary-foreground hover:bg-primary/90"
+          className="h-12 w-full rounded-xl bg-fl-green text-[15px] font-medium text-white shadow-lg shadow-green-600/20 hover:bg-fl-green/90"
           disabled={sending || !email.trim()}
         >
           {sending ? "Sending..." : "Send Reset Link"}
@@ -90,7 +90,7 @@ export default function ForgotPasswordPage() {
       <div className="mt-5 text-center">
         <Link
           href="/login"
-          className="text-[11px] text-muted-foreground hover:text-foreground inline-flex items-center gap-1 transition-colors"
+          className="inline-flex items-center gap-1 text-[13px] font-medium text-fl-green transition-colors hover:underline"
         >
           <ArrowLeft className="h-3 w-3" />
           Back to login
