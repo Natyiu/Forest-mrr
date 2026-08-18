@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Allotment — Isometric Subscription Garden</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
+    <script>
+      // Resolve light/dark before the first paint. Without this, a dark-mode
+      // reload shows a white page for as long as it takes React to mount.
+      (function () {
+        try {
+          var stored = localStorage.getItem('allotment:mode') || 'system';
+          var resolved = stored === 'system'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : stored;
+          document.documentElement.dataset.mode = resolved;
+          document.documentElement.style.colorScheme = resolved;
+        } catch (error) {
+          // Storage unavailable — the light default in index.css stands.
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-page text-ink antialiased overflow-hidden select-none">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

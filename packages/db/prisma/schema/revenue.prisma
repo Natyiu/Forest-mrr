@@ -1,0 +1,107 @@
+/// One business a user is tracking.
+///
+/// **A person can run more than one thing.** Connections used to hang off the
+/// user, which made "your revenue" a single book and made connecting a second
+/// Stripe account impossible — the unique key was `(userId, provider)`, so a
+/// second Stripe *replaced* the first. A startup is the thing that owns
+/// connections, and a user owns startups.
+///
+/// The name is the only required field: this is a label on a plot, not a company
+/// record. `emoji` and `tone` exist so a switcher can tell two of them apart at a
+/// glance without the reader having to read.
+model Startup {
+  id     String @id @default(cuid())
+  userId String
+  name   String
+
+  /// Shown in the switcher beside the name. One character, or null.
+  emoji String?
+  /// A key into the app's categorical tones — decorative, means nothing.
+  tone String?
+
+  connections RevenueConnection[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, name])
+  @@index([userId])
+  @@map("startup")
+}
+
+/// A payment provider a startup has connected so its real revenue can be read.
+///
+/// **One row per startup per provider.** A business can sell through Stripe *and*
+/// RevenueCat, and both are the same business — so the unique key is that pair.
+/// Reconnecting the same provider replaces the key rather than leaving two rows
+/// where one is silently stale. Two *startups* may each connect their own Stripe;
+/// that is the whole point of the startup existing.
+///
+/// **`secret` is sealed, never plaintext.** It holds the whole credential object
+/// (the key, and for the providers that need more than a key, the rest of it) as
+/// AES-256-GCM ciphertext — see `lib/revenue/secrets.ts`. Nothing reads it but the
+/// server, and nothing sends it back to the browser: the dialog shows `secretHint`
+/// — the last four characters — because "is this the key I pasted?" is the only
+/// question a UI has to answer about a key it must never display.
+///
+/// **The non-secret half of a credential is a column of its own.** A RevenueCat
+/// project ID and a Superwall application ID are identifiers, not secrets, and they
+/// belong where a page can render them and a query can group by them without
+/// opening the envelope.
+model RevenueConnection {
+  id String @id @default(cuid())
+
+  /// Kept alongside `startupId` so every "everything this person can see" query
+  /// stays one indexed read rather than a join through startups.
+  userId    String
+  startupId String
+  startup   Startup @relation(fields: [startupId], references: [id], onDelete: Cascade)
+
+  /// A `RevenueProviderId` — `stripe`, `polar`, `lemonsqueezy`, `dodopayments`,
+  /// `revenuecat`, `superwall`. A string rather than an enum because the provider
+  /// list is data (`lib/revenue/providers.ts`) and adding the seventh one must not
+  /// be a migration.
+  provider String
+
+  /// AES-256-GCM sealed JSON of the credential. Server-only, write-mostly.
+  secret     String
+  /// Last four characters of the key, for "…a4Kf" in the UI.
+  secretHint String
+
+  /// The identifier the provider needs alongside the key: a RevenueCat project ID,
+  /// a Superwall application ID, a Polar organization ID.
+  reference String?
+  /// A public URL the provider itself publishes — RevenueCat's verified-metrics
+  /// share page. Not a credential.
+  publicUrl String?
+
+  /// What the provider called itself when the key was last checked, so the UI can
+  /// say *which* Stripe account this is.
+  accountLabel String?
+
+  /// The logo the provider holds for this account — Polar's organization avatar,
+  /// a LemonSqueezy store avatar. **Imported, never uploaded**: a business that
+  /// sells through Polar has already put its mark on its checkout page, and asking
+  /// for it a second time is asking a user to do a job their payment provider has
+  /// done. It is re-read on every check, because a logo changed at the provider
+  /// should not persist here. Null is normal and expected — three of the six
+  /// publish nothing a read-only key can fetch (Stripe's branding icon is a file
+  /// ID that needs a write to turn into a URL), and those keep the emoji.
+  accountImage String?
+
+  /// `connected` while the last check passed, `error` once one has failed.
+  /// Read-only keys get revoked, expire, and lose scopes, and a connection that
+  /// cannot answer is worth showing as broken rather than as connected.
+  status         String    @default("connected")
+  lastError      String?
+  lastVerifiedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([startupId, provider])
+  @@index([userId])
+  @@index([startupId])
+  @@index([status])
+  @@map("revenue_connection")
+}

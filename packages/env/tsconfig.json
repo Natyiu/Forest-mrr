@@ -1,0 +1,3 @@
+{
+  "extends": "@Batman/config/tsconfig.base.json"
+}

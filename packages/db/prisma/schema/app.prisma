@@ -1,0 +1,56 @@
+model AppSettings {
+  id                       String    @id @default("default")
+  onboardingEnabled        Boolean   @default(true)
+  appName                  String    @default("Batman")
+  appDescription           String    @default("")
+  appUrl                   String    @default("")
+  metaTitle                String?
+  metaDescription          String?
+  ogImage                  String?
+  appTheme                 String    @default("default")
+  emailVerificationEnabled Boolean   @default(false)
+  forgotPasswordEnabled    Boolean   @default(true)
+  socialLoginEnabled       Boolean   @default(false)
+  organizationsEnabled     Boolean   @default(false)
+  invitesEnabled           Boolean   @default(false)
+  maintenanceMode          Boolean   @default(false)
+  maintenanceMessage       String    @default("We're performing scheduled maintenance. We'll be back shortly.")
+  defaultUserRole          String    @default("user")
+  maxUsersEnabled          Boolean   @default(false)
+  maxUsers                 Int       @default(0)
+  supportEmail             String    @default("")
+  privacyContent           String    @default("")
+  termsContent             String    @default("")
+  signupsEnabled           Boolean   @default(true)
+  sessionTimeout           Int       @default(30)
+  supabaseUrl              String?
+  supabaseAnonKey          String?
+  supabaseServiceRoleKey   String?
+  resendApiKey             String?
+  resendFromEmail          String?   @default("noreply@updates.yourdomain.com")
+  googleClientId           String?
+  googleClientSecret       String?
+  githubClientId           String?
+  githubClientSecret       String?
+  polarAccessToken         String?
+  polarOrganizationId      String?
+  polarWebhookSecret       String?
+  polarSandboxMode         Boolean   @default(true)
+  waitlistMode             Boolean   @default(false)
+  waitlistTitle            String    @default("Join the waitlist")
+  waitlistHeadline         String    @default("Be the first to know when we launch")
+  waitlistDescription      String    @default("")
+  waitlistButtonText       String    @default("Join waitlist")
+  waitlistSuccessMessage   String    @default("You're on the list! We'll notify you when we launch.")
+  waitlistShowName         Boolean   @default(false)
+  waitlistShowCompany      Boolean   @default(false)
+  countdownMode            Boolean   @default(false)
+  countdownTarget          DateTime?
+  countdownTitle           String    @default("Coming soon")
+  countdownHeadline        String    @default("We're launching soon")
+  countdownDescription     String    @default("")
+  countdownEndMessage      String    @default("We're live! Check back soon.")
+  updatedAt                DateTime  @updatedAt
+
+  @@map("app_settings")
+}

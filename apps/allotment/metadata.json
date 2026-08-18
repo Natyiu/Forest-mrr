@@ -1,0 +1,6 @@
+{
+  "name": "Allotment",
+  "description": "Isometric subscription garden & Terminator rotating globe mapping customer cohorts, global payment waves, solar terminator, plan tiers, and real-time revenue.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

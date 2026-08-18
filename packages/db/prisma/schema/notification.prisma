@@ -1,0 +1,30 @@
+model Notification {
+  id             String                  @id @default(cuid())
+  title          String
+  description    String
+  tag            String                  @default("general")
+  attachmentUrl  String?
+  attachmentName String?
+  senderId       String
+  createdAt      DateTime                @default(now())
+  recipients     NotificationRecipient[]
+
+  @@index([senderId])
+  @@index([createdAt])
+  @@map("notification")
+}
+
+model NotificationRecipient {
+  id             String       @id @default(cuid())
+  notificationId String
+  userId         String
+  read           Boolean      @default(false)
+  readAt         DateTime?
+  createdAt      DateTime     @default(now())
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId, read])
+  @@index([userId, createdAt])
+  @@map("notification_recipient")
+}
