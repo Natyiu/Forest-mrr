@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { Manrope } from "next/font/google";
-import { ArrowRight, ArrowUpRight, Check, Wrench } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -209,13 +209,7 @@ function FooterTreeline() {
   );
 }
 
-export function LandingPage({
-  supportEmail,
-  onRerunSetup,
-}: {
-  supportEmail?: string;
-  onRerunSetup?: () => void;
-}) {
+export function LandingPage({ supportEmail }: { supportEmail?: string }) {
   return (
     <div
       // `zoom` is desktop density only. On a phone it made 16px body copy
@@ -526,18 +520,6 @@ export function LandingPage({
               <a href={`mailto:${supportEmail}`} className="transition-colors hover:text-foreground">
                 Contact
               </a>
-            )}
-            {/* The setup wizard's way back in. Discreet, because it is for the
-                person who deployed this and nobody else. */}
-            {onRerunSetup && (
-              <button
-                type="button"
-                onClick={onRerunSetup}
-                className="inline-flex items-center gap-1.5 opacity-50 transition-opacity hover:opacity-100"
-              >
-                <Wrench className="h-3 w-3" />
-                Re-run setup
-              </button>
             )}
           </div>
         </div>

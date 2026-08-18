@@ -152,7 +152,8 @@ What the port had to change, and why:
 ### The landing page (web)
 
 **`app/landing-page.tsx` — a poster, reproduced from the design.** `page.tsx`
-keeps the gating it always had (waitlist, countdown, the setup wizard) and
+keeps the waitlist and countdown gating (the first-run setup wizard that used
+to stand in front of it is deleted — `.env` is configured by hand) and
 renders this instead of the boilerplate's starter card.
 
 **Above the fold is one painted band** (`.forest-landing` in index.css). The

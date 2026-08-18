@@ -4,8 +4,6 @@ import dynamic from "next/dynamic";
 import { useState, useEffect } from "react";
 
 import { LandingPage } from "./landing-page";
-import { SetupWizard } from "@/components/setup-wizard";
-import { getSetupStatus } from "@/lib/actions/setup";
 import { getAppSettings } from "@/lib/actions/user";
 import { getSiteSettings } from "@/lib/actions/site-settings";
 
@@ -46,30 +44,10 @@ export default function Page() {
   if (siteSettings?.waitlist) {
     return <WaitlistPage settings={siteSettings.waitlist} />;
   }
-  return <StarterPage />;
+  return <ReadyPage />;
 }
 
-type SetupState = "loading" | "wizard" | "ready";
-
-function StarterPage() {
-  const [state, setState] = useState<SetupState>("loading");
-
-  useEffect(() => {
-    getSetupStatus().then((status) => {
-      setState(status.configured ? "ready" : "wizard");
-    });
-  }, []);
-
-  if (state === "loading") return <StarterSkeleton />;
-
-  if (state === "wizard") {
-    return <SetupWizard onComplete={() => setState("ready")} />;
-  }
-
-  return <ReadyPage onRerunSetup={() => setState("wizard")} />;
-}
-
-function ReadyPage({ onRerunSetup }: { onRerunSetup: () => void }) {
+function ReadyPage() {
   const [supportEmail, setSupportEmail] = useState<string>("");
 
   useEffect(() => {
@@ -79,10 +57,11 @@ function ReadyPage({ onRerunSetup }: { onRerunSetup: () => void }) {
     });
   }, []);
 
-  // The waitlist / countdown / setup-wizard gating above is this file's job; the
-  // poster itself is `landing-page.tsx`, so neither has to be read to change the
-  // other.
-  return <LandingPage supportEmail={supportEmail} onRerunSetup={onRerunSetup} />;
+  // The waitlist / countdown gating above is this file's job; the poster itself
+  // is `landing-page.tsx`, so neither has to be read to change the other. (There
+  // used to be a setup wizard in front of the poster on a fresh install; it is
+  // gone, and configuration is the `.env` file's job.)
+  return <LandingPage supportEmail={supportEmail} />;
 }
 
 function StarterSkeleton() {
