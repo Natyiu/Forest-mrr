@@ -378,8 +378,12 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
           A forest tells you before. Size is money, colour is health, and an empty
           patch is a month that did not go well.
         </p>
+        </div>
 
-        <div className="mt-10 grid gap-4 text-left sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
+        {/* The card row gets a wider container than the copy above it, so each
+            card has more room without the heading measure stretching with it. */}
+        <div className="mx-auto max-w-[84rem] px-5">
+        <div className="mt-10 grid gap-5 text-left sm:mt-14 sm:grid-cols-2 lg:grid-cols-4">
           {/*
             Two boxes per card, not one: a white frame with a hairline and a
             shadow, and a washed panel inset inside it. The frame is what stops
@@ -398,16 +402,16 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
               className="rounded-[26px] bg-card p-1.5 shadow-elev-2 ring-1 ring-border/70"
             >
               <div
-                className={`flex h-full flex-col rounded-[20px] bg-linear-to-br p-6 ${card.wash}`}
+                className={`flex h-full flex-col rounded-[20px] bg-linear-to-br p-8 ${card.wash}`}
               >
-                <span className={`mb-5 h-2.5 w-2.5 rounded-full ${card.dot}`} />
+                <span className={`mb-6 h-3 w-3 rounded-full ${card.dot}`} />
                 <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-foreground/45">
                   {card.eyebrow}
                 </p>
-                <h3 className="mt-2 text-[19px] font-medium leading-[1.2] tracking-[-0.025em]">
+                <h3 className="mt-2.5 text-[21px] font-medium leading-[1.2] tracking-[-0.025em]">
                   {card.title}
                 </h3>
-                <p className="mt-3 text-[13.5px] leading-relaxed text-muted-foreground">
+                <p className="mt-3.5 text-[14.5px] leading-relaxed text-muted-foreground">
                   {card.body}
                 </p>
               </div>
