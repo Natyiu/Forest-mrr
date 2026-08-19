@@ -278,7 +278,7 @@ export function ConnectRevenueDialog({
               the whole choice visible; picking one swaps the steps below it, and
               a tile that is already connected says so on its corner.
             */}
-            <div role="radiogroup" aria-label="Payment provider" className="grid grid-cols-3 gap-2">
+            <div role="radiogroup" aria-label="Payment provider" className="mx-auto grid w-fit grid-cols-3 gap-2.5">
               {REVENUE_PROVIDER_LIST.map((candidate) => {
                 const selected = candidate.id === providerId;
                 const isConnected =
@@ -292,7 +292,7 @@ export function ConnectRevenueDialog({
                     aria-checked={selected}
                     onClick={() => reset(candidate.id)}
                     className={cn(
-                      "relative flex aspect-square flex-col items-center justify-center gap-2.5 rounded-2xl text-[11.5px] font-semibold transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-garden",
+                      "relative flex size-[104px] flex-col items-center justify-center gap-2 rounded-2xl text-[11px] font-semibold transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-garden",
                       selected
                         ? "bg-garden-wash text-ink ring-2 ring-garden"
                         : "bg-inset text-ink-soft hover:bg-inset-strong hover:text-ink",

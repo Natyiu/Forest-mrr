@@ -31,7 +31,7 @@ export function ProviderMark({
         "inline-grid shrink-0 place-items-center",
         size === "sm" && "size-5 rounded-[6px]",
         size === "default" && "size-7 rounded-[9px]",
-        size === "lg" && "size-11 rounded-[13px]",
+        size === "lg" && "size-9 rounded-[11px]",
         className,
       )}
       style={{
@@ -43,7 +43,7 @@ export function ProviderMark({
         className={cn(
           size === "sm" && "size-3",
           size === "default" && "size-4",
-          size === "lg" && "size-6",
+          size === "lg" && "size-5",
         )}
       />
     </span>
