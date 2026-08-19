@@ -19,6 +19,17 @@ const DEFAULT_TITLE = "Batman — The Dark Knight Boilerplate";
 const DEFAULT_DESCRIPTION =
   "A production-ready full-stack boilerplate forged in the shadows of Gotham. Next.js, Prisma, Better Auth, and more.";
 
+/**
+ * The favicon, as metadata rather than an `app/icon.svg` file: Next 16.1's
+ * Turbopack panics on an SVG app icon during `next build` ("Dependency tracking
+ * is disabled so invalidation is not allowed"), so the SVG is served from
+ * `public/` instead. `app/icon.png` and `app/apple-icon.png` are real files and
+ * fine — the SVG entry here outranks the PNG in browsers that take it.
+ */
+const ICONS: Metadata["icons"] = {
+  icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const settings = await getAppSettings();
@@ -39,6 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title,
       description,
+      icons: ICONS,
       openGraph: {
         title,
         description,
@@ -57,6 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
     return {
       title: DEFAULT_TITLE,
       description: DEFAULT_DESCRIPTION,
+      icons: ICONS,
     };
   }
 }
