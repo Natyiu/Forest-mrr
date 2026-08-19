@@ -7,7 +7,7 @@ import { Toaster } from "./ui/sonner";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false} themes={["light", "dark"]} disableTransitionOnChange>
       <ThemeSync />
       {children}
       {/* The corner switch for pages with no chrome of their own; it stands down

@@ -1,14 +1,12 @@
 "use client";
 
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Loader2, Monitor } from "lucide-react";
+import { Monitor } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,42 +19,14 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { AccountSettingsSkeleton } from "@/components/skeletons";
-import { Field, FIELD_INPUT, SettingsCard } from "@/components/settings/settings-card";
+import { SettingsCard } from "@/components/settings/settings-card";
 
 export default function AccountSettings() {
   const { data: session, isPending } = authClient.useSession();
   const router = useRouter();
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [changingPassword, setChangingPassword] = useState(false);
 
   if (isPending) return <AccountSettingsSkeleton />;
   if (!session) return null;
-
-  async function handleChangePassword() {
-    if (newPassword !== confirmPassword) {
-      toast.error("Passwords don't match");
-      return;
-    }
-    if (newPassword.length < 8) {
-      toast.error("Password must be at least 8 characters");
-      return;
-    }
-
-    setChangingPassword(true);
-    try {
-      await authClient.changePassword({ currentPassword, newPassword });
-      toast.success("Password updated");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-    } catch {
-      toast.error("Failed to change password. Check your current password.");
-    } finally {
-      setChangingPassword(false);
-    }
-  }
 
   async function handleDeleteAccount() {
     try {
@@ -70,63 +40,6 @@ export default function AccountSettings() {
 
   return (
     <div className="space-y-4">
-      <SettingsCard
-        title="Password"
-        description="Change the password you sign in with."
-        footer={
-          <Button
-            onClick={handleChangePassword}
-            disabled={changingPassword || !currentPassword || !newPassword}
-            size="sm"
-            className="h-9 rounded-full px-4 text-[13px]"
-          >
-            {changingPassword ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Updating…
-              </>
-            ) : (
-              "Update password"
-            )}
-          </Button>
-        }
-      >
-        <div className="space-y-4">
-          <Field label="Current password" htmlFor="currentPassword">
-            <Input
-              id="currentPassword"
-              type="password"
-              autoComplete="current-password"
-              value={currentPassword}
-              onChange={(event) => setCurrentPassword(event.target.value)}
-              className={FIELD_INPUT}
-            />
-          </Field>
-
-          <Field label="New password" htmlFor="newPassword" hint="At least 8 characters.">
-            <Input
-              id="newPassword"
-              type="password"
-              autoComplete="new-password"
-              value={newPassword}
-              onChange={(event) => setNewPassword(event.target.value)}
-              className={FIELD_INPUT}
-            />
-          </Field>
-
-          <Field label="Confirm new password" htmlFor="confirmPassword">
-            <Input
-              id="confirmPassword"
-              type="password"
-              autoComplete="new-password"
-              value={confirmPassword}
-              onChange={(event) => setConfirmPassword(event.target.value)}
-              className={FIELD_INPUT}
-            />
-          </Field>
-        </div>
-      </SettingsCard>
-
       <SettingsCard title="Sessions" description="Where this account is signed in.">
         <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/40 px-4 py-3">
           <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-card text-muted-foreground">

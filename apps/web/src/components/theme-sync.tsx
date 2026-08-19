@@ -25,7 +25,16 @@ import { useTheme } from "next-themes";
  * covers that tick so nothing flashes.
  */
 export function ThemeSync() {
-  const { resolvedTheme } = useTheme();
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
+  /**
+   * There are two modes now, light and dark. A browser that stored `system`
+   * back when that was a choice would otherwise hand next-themes a value it has
+   * no class for; it is settled to light — the default — once, on arrival.
+   */
+  useEffect(() => {
+    if (theme && theme !== "light" && theme !== "dark") setTheme("light");
+  }, [theme, setTheme]);
 
   useEffect(() => {
     if (resolvedTheme !== "light" && resolvedTheme !== "dark") return;

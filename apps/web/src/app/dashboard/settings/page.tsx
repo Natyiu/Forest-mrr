@@ -10,7 +10,6 @@ import { uploadFile } from "@/lib/supabase";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfileSettingsSkeleton } from "@/components/skeletons";
 import { Field, FIELD_INPUT, SettingsCard } from "@/components/settings/settings-card";
@@ -21,7 +20,6 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [name, setName] = useState("");
-  const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [initialized, setInitialized] = useState(false);
@@ -31,7 +29,6 @@ export default function ProfileSettings() {
 
   if (!initialized) {
     setName(session.user.name ?? "");
-    setBio(((session.user as Record<string, unknown>).bio as string) ?? "");
     setAvatarUrl(session.user.image ?? "");
     setInitialized(true);
   }
@@ -81,7 +78,7 @@ export default function ProfileSettings() {
   async function handleSave() {
     setSaving(true);
     try {
-      await updateProfile({ name, bio, image: avatarUrl || undefined });
+      await updateProfile({ name, image: avatarUrl || undefined });
       toast.success("Profile updated");
     } catch {
       toast.error("Failed to save profile");
@@ -162,7 +159,7 @@ export default function ProfileSettings() {
 
       <SettingsCard
         title="Profile"
-        description="Your name and bio, visible to others."
+        description="Your name, visible to others."
         footer={
           <Button
             onClick={handleSave}
@@ -202,17 +199,6 @@ export default function ProfileSettings() {
               value={session.user.email}
               disabled
               className={cn(FIELD_INPUT, "text-muted-foreground")}
-            />
-          </Field>
-
-          <Field label="Bio" htmlFor="bio">
-            <Textarea
-              id="bio"
-              value={bio}
-              onChange={(event) => setBio(event.target.value)}
-              placeholder="Tell us about yourself…"
-              rows={4}
-              className="resize-none rounded-xl border-border bg-muted/60 px-3.5 py-3 text-[13px] md:text-[13px]"
             />
           </Field>
         </div>

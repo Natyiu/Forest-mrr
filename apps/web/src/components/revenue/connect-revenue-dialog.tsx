@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { AlertCircle, ExternalLink, Loader2, ShieldCheck, Unplug } from "lucide-react";
+import { AlertCircle, Check, ExternalLink, Loader2, Plug, ShieldCheck, Unplug } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -245,39 +245,77 @@ export function ConnectRevenueDialog({
         garden's `Surface`: 20px+ radius, lifted by shadow, no border.
       */}
       <DialogContent className="garden-root garden-skin sm:max-w-lg max-h-[85vh] overflow-y-auto rounded-[24px] border-0 bg-card p-6 shadow-modal ring-1 ring-hairline">
-        <DialogHeader>
-          <DialogTitle className="text-[15px] font-bold tracking-tight text-ink">Connect your revenue</DialogTitle>
-          <DialogDescription className="text-[12px] leading-relaxed text-ink-soft">
-            Import a read-only API key so we can read your live revenue. Keys are stored
-            encrypted, and nothing here can move money.
-          </DialogDescription>
+        <DialogHeader className="gap-1.5">
+          <div className="flex items-center gap-3">
+            <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-garden-wash text-garden-soft">
+              <Plug className="size-4" />
+            </span>
+            <div>
+              <DialogTitle className="text-[16px] font-bold tracking-tight text-ink">Connect your revenue</DialogTitle>
+              <DialogDescription className="mt-0.5 text-[12px] leading-relaxed text-ink-soft">
+                Import a read-only API key so we can read your live revenue. Keys are stored
+                encrypted, and nothing here can move money.
+              </DialogDescription>
+            </div>
+          </div>
         </DialogHeader>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint">
-              Choose your payment provider
-            </label>
-            <Select value={providerId} onValueChange={(next) => reset(next as RevenueProviderId)}>
-              <SelectTrigger className="h-10 rounded-full border-0 bg-inset px-3.5 text-xs font-semibold text-ink hover:bg-inset-strong">
-                <SelectValue />
-              </SelectTrigger>
-              {/* Portalled too, so it carries the skin itself. */}
-              <SelectContent className="garden-root garden-skin rounded-2xl border-0 p-1 shadow-modal ring-1 ring-hairline">
-                {REVENUE_PROVIDER_LIST.map((candidate) => (
-                  <SelectItem key={candidate.id} value={candidate.id} className="text-xs">
-                    <span className="flex items-center gap-2">
-                      <ProviderMark provider={candidate} size="sm" />
-                      {candidate.name}
-                    </span>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <div className="flex items-baseline justify-between">
+              <label className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint">
+                Where does your money arrive?
+              </label>
+              <span className="text-[10.5px] text-ink-faint">{REVENUE_PROVIDER_LIST.length} providers</span>
+            </div>
+
+            {/*
+              Every provider on the table, not one behind a dropdown.
+
+              The select this replaced opened on Stripe and said nothing about the
+              other five, so a Polar or RevenueCat business read "Stripe" and
+              assumed this was not for them. A grid of tiles is the same choice with
+              the whole choice visible; picking one swaps the steps below it, and
+              a tile that is already connected says so on its corner.
+            */}
+            <div role="radiogroup" aria-label="Payment provider" className="grid grid-cols-3 gap-2">
+              {REVENUE_PROVIDER_LIST.map((candidate) => {
+                const selected = candidate.id === providerId;
+                const isConnected =
+                  !disconnected.includes(candidate.id) &&
+                  connections.some((connection) => connection.provider === candidate.id);
+                return (
+                  <button
+                    key={candidate.id}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() => reset(candidate.id)}
+                    className={cn(
+                      "relative flex h-[68px] flex-col items-center justify-center gap-1.5 rounded-2xl text-[11.5px] font-semibold transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-garden",
+                      selected
+                        ? "bg-garden-wash text-ink ring-2 ring-garden"
+                        : "bg-inset text-ink-soft hover:bg-inset-strong hover:text-ink",
+                    )}
+                  >
+                    <ProviderMark provider={candidate} />
+                    <span className="leading-none">{candidate.name}</span>
+                    {isConnected && (
+                      <span
+                        title="Connected"
+                        className="absolute right-1.5 top-1.5 grid size-4 place-items-center rounded-full bg-garden text-garden-ink"
+                      >
+                        <Check className="size-2.5" strokeWidth={3} />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
             {provider.note && (
-              <p className="flex items-start gap-1.5 pt-0.5 text-[11px] text-muted-foreground">
-                <ShieldCheck className="mt-px size-3 shrink-0" />
+              <p className="flex items-start gap-1.5 rounded-xl bg-inset/60 px-2.5 py-2 text-[11px] leading-relaxed text-ink-soft">
+                <ShieldCheck className="mt-px size-3 shrink-0 text-garden-soft" />
                 {provider.note}
               </p>
             )}
@@ -414,7 +452,10 @@ export function ConnectRevenueDialog({
                 Checking with {provider.name}…
               </>
             ) : (
-              `Connect ${provider.name}`
+              <>
+                <Plug className="size-3.5" />
+                Connect {provider.name}
+              </>
             )}
           </Button>
         </DialogFooter>
@@ -436,9 +477,17 @@ function StepHeading({
   children?: React.ReactNode;
 }) {
   return (
-    <div className="space-y-1.5">
-      <p className={cn("text-xs font-semibold", muted ? "text-muted-foreground" : "text-foreground")}>
-        {number}. {label}
+    <div className="space-y-2">
+      <p className="flex items-center gap-2 text-[12.5px] font-bold text-ink">
+        <span
+          className={cn(
+            "grid size-5 shrink-0 place-items-center rounded-full text-[10px] font-bold tabular-nums",
+            muted ? "bg-inset text-ink-faint" : "bg-garden text-garden-ink",
+          )}
+        >
+          {number}
+        </span>
+        <span className={muted ? "text-ink-soft" : undefined}>{label}</span>
       </p>
       {children}
     </div>

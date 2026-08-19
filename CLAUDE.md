@@ -283,10 +283,12 @@ it by whatever the pre-paint script had guessed on the last full load.
   this change exists to stop. It is drawn with the garden's `IconButton`, whose
   tokens live on `:root`, so it is correctly lit everywhere rather than only
   inside the plot.
-- **It cycles light → dark → system** rather than opening a menu, and the icon
-  says which state it is *in* (sun / moon / monitor), not which it would go to.
-  Until `next-themes` has read storage it renders the monitor, because that is
-  also the default and anything else is a hydration mismatch.
+- **It flips light ↔ dark — there is no system mode.** `enableSystem` is off on
+  the provider, the pre-paint script reads the stored key as `dark` or light and
+  nothing else, and `ThemeSync` settles a browser that still holds `system` from
+  before to light, once. The icon says which state it is *in* (sun / moon), not
+  which it would go to. Until `next-themes` has read storage it renders the sun,
+  because light is the default and anything else is a hydration mismatch.
 
 The plot's appearance popover lost its Theme section and the admin sidebar lost
 its footer toggle; both were second copies of this switch.

@@ -2,13 +2,12 @@
 
 import { useTheme } from "next-themes";
 import { useState, useEffect } from "react";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const themes = [
   { id: "light", label: "Light", icon: Sun },
   { id: "dark", label: "Dark", icon: Moon },
-  { id: "system", label: "System", icon: Monitor },
 ] as const;
 
 export default function AppearanceSettings() {
@@ -25,7 +24,7 @@ export default function AppearanceSettings() {
         </p>
       </div>
 
-      <div className="grid grid-cols-3 gap-2">
+      <div className="grid grid-cols-2 gap-2">
         {themes.map((t) => {
           const isActive = mounted && theme === t.id;
           return (

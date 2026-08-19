@@ -295,16 +295,10 @@ export function AccountSettingsSkeleton() {
           <Skeleton className="h-4 w-32" />
           <Skeleton className="h-3 w-44" />
         </div>
-        <div className="p-5 space-y-4">
-          {Array.from({ length: 3 }).map((_, i) => (
-            <div key={i} className="space-y-1.5">
-              <Skeleton className="h-3 w-24" />
-              <Skeleton className="h-11 w-full rounded-xl" />
-            </div>
-          ))}
-          <div className="flex justify-end">
-            <Skeleton className="h-8 w-32" />
-          </div>
+        {/* One session row: the page's first card is Sessions now that the
+            password form is gone. */}
+        <div className="p-5">
+          <Skeleton className="h-14 w-full rounded-xl" />
         </div>
       </div>
       <Skeleton className="h-px w-full" />

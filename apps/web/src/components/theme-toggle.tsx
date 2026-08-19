@@ -3,17 +3,18 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 import { IconButton } from "@/garden/components/hud/ui";
 
 /**
  * **The theme switch, and there is only one of it.**
  *
- * It cycles light → dark → system rather than opening a menu, because three
- * states is a cycle and a two-item popover for a two-and-a-half-state setting is
- * a click of ceremony. The icon says which state it is *in* — sun, moon, or the
- * monitor that means "whatever the machine says" — not which it would go to.
+ * Two states, light and dark, and it flips between them. There is no *system*
+ * setting any more: it was a third state for a preference almost nobody set
+ * deliberately, and it meant the app could change mode on its own when the OS
+ * did, with nothing on screen saying why. The icon says which state it is *in*
+ * — sun or moon — not which it would go to.
  *
  * `next-themes` is the owner (see `theme-sync.tsx`), so pressing this changes
  * the *whole app*: the shadcn `.dark` class and the garden's `data-mode` move
@@ -27,27 +28,25 @@ import { IconButton } from "@/garden/components/hud/ui";
  * page, which is the point of having one of it.
  */
 
-const NEXT: Record<string, string> = { light: "dark", dark: "system", system: "light" };
-
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
+  const { resolvedTheme, setTheme } = useTheme();
   /**
-   * `theme` is undefined until next-themes has read storage, and rendering the
-   * eventual icon before then is a hydration mismatch — the server has no idea
-   * which one it will be. The monitor is the honest placeholder: `system` is
-   * also the default.
+   * `resolvedTheme` is undefined until next-themes has read storage, and
+   * rendering the eventual icon before then is a hydration mismatch — the server
+   * has no idea which one it will be. Light is the placeholder because light is
+   * the default, so for most people the icon never changes.
    */
   const [ready, setReady] = useState(false);
   useEffect(() => setReady(true), []);
 
-  const current = ready ? theme ?? "system" : "system";
-  const Icon = current === "light" ? Sun : current === "dark" ? Moon : Monitor;
+  const current = ready && resolvedTheme === "dark" ? "dark" : "light";
+  const next = current === "dark" ? "light" : "dark";
 
   return (
     <IconButton
-      icon={Icon}
-      label={`Theme: ${current}. Switch to ${NEXT[current] ?? "light"}.`}
-      onClick={() => setTheme(NEXT[current] ?? "light")}
+      icon={current === "dark" ? Moon : Sun}
+      label={`Theme: ${current}. Switch to ${next}.`}
+      onClick={() => setTheme(next)}
     />
   );
 }

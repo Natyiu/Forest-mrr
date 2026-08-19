@@ -86,7 +86,7 @@ export function GardenView({
 
   return (
     <ThemeProvider
-      mode={theme === "light" || theme === "dark" ? theme : "system"}
+      mode={theme === "dark" ? "dark" : "light"}
       onModeChange={setTheme}
     >
       <GardenApp
