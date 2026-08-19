@@ -384,10 +384,10 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
         <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-garden">
           The plot
         </p>
-        <h2 className="mx-auto mt-4 max-w-2xl text-[30px] font-medium leading-[1.08] tracking-[-0.035em] sm:text-[42px]">
+        <h2 className="mx-auto mt-4 max-w-2xl text-[30px] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[42px]">
           A dashboard you read at a glance
         </h2>
-        <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
+        <p className="mx-auto mt-5 max-w-xl text-[16px] font-medium leading-relaxed text-muted-foreground">
           A table of subscriptions tells you what happened after you have read it.
           A forest tells you before. Size is money, colour is health, and an empty
           patch is a month that did not go well.
@@ -422,7 +422,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
                 <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-foreground/45">
                   {card.eyebrow}
                 </p>
-                <h3 className="mt-2.5 text-[21px] font-medium leading-[1.2] tracking-[-0.025em]">
+                <h3 className="mt-2.5 text-[21px] font-semibold leading-[1.2] tracking-[-0.025em]">
                   {card.title}
                 </h3>
                 <p className="mt-3.5 text-[14.5px] leading-relaxed text-muted-foreground">
@@ -442,10 +442,10 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
             <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-garden">
               Why trust it
             </p>
-            <h2 className="mt-4 text-[34px] font-medium leading-[1.08] tracking-[-0.035em] sm:text-[44px]">
+            <h2 className="mt-4 text-[34px] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[44px]">
               It only ever draws what your provider said
             </h2>
-            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-muted-foreground">
+            <p className="mt-5 max-w-lg text-[17px] font-medium leading-relaxed text-muted-foreground">
               A pretty chart of numbers nobody can source is worse than no chart.
               Everything here is one read away from the place your money actually
               arrives.
@@ -468,7 +468,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
                   <Check className="h-4 w-4" />
                 </span>
                 <div>
-                  <p className="text-[17px] font-medium tracking-tight">{promise.title}</p>
+                  <p className="text-[17px] font-semibold tracking-tight">{promise.title}</p>
                   <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
                     {promise.body}
                   </p>
@@ -487,10 +487,10 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
       */}
       <section className="forest-landing bg-fl-ground py-20 text-center text-fl-ink sm:py-28">
         <div className="mx-auto max-w-6xl px-5">
-          <h2 className="mx-auto max-w-3xl text-[36px] font-medium leading-[1.06] tracking-[-0.04em] sm:text-[52px]">
+          <h2 className="mx-auto max-w-3xl text-[36px] font-bold leading-[1.06] tracking-[-0.04em] sm:text-[52px]">
             Go and look at your business
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-fl-muted">
+          <p className="mx-auto mt-5 max-w-xl text-[17px] font-medium leading-relaxed text-fl-muted">
             Paste one read-only key. The forest is planted by the time you look up.
           </p>
           <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
