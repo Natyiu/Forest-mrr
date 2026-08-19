@@ -6,6 +6,14 @@ import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { manrope } from "@/lib/fonts";
+import {
+  DodoPaymentsLogo,
+  LemonSqueezyLogo,
+  PolarLogo,
+  RevenueCatLogo,
+  StripeLogo,
+  SuperwallLogo,
+} from "./provider-logos";
 
 /**
  * **The landing page.**
@@ -47,12 +55,12 @@ import { manrope } from "@/lib/fonts";
  */
 
 const PROVIDERS = [
-  "Stripe",
-  "Polar",
-  "LemonSqueezy",
-  "DodoPayments",
-  "RevenueCat",
-  "Superwall",
+  { name: "Stripe", Logo: StripeLogo },
+  { name: "Polar", Logo: PolarLogo },
+  { name: "LemonSqueezy", Logo: LemonSqueezyLogo },
+  { name: "DodoPayments", Logo: DodoPaymentsLogo },
+  { name: "RevenueCat", Logo: RevenueCatLogo },
+  { name: "Superwall", Logo: SuperwallLogo },
 ];
 
 const CARDS = [
@@ -341,18 +349,24 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
 
 
       {/* ── Providers ────────────────────────────────────────────────────── */}
-      <section className="border-y border-border bg-card/40 py-10 sm:py-12">
+      <section className="border-y border-border bg-card/40 py-12 sm:py-16">
         <div className="mx-auto max-w-6xl px-5 text-center">
-          <p className="text-[13px] font-normal text-muted-foreground">
+          <p className="text-[17px] font-normal text-muted-foreground sm:text-[20px]">
             Reads the account you already sell through
           </p>
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:mt-6 sm:gap-x-9 sm:gap-y-4">
-            {PROVIDERS.map((provider) => (
+          {/*
+            The marks are inlined SVGs tinted with `currentColor` rather than
+            `<img>`s, so the row is one muted colour instead of six brand hues —
+            named providers, not a logo wall.
+          */}
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:mt-8 sm:gap-x-11 sm:gap-y-5">
+            {PROVIDERS.map(({ name, Logo }) => (
               <span
-                key={provider}
-                className="text-[17px] font-medium tracking-tight text-foreground/55"
+                key={name}
+                className="flex items-center gap-2.5 text-[19px] font-medium tracking-tight text-foreground/55 sm:text-[22px]"
               >
-                {provider}
+                <Logo className="h-6 w-6 shrink-0 sm:h-7 sm:w-7" />
+                {name}
               </span>
             ))}
           </div>
