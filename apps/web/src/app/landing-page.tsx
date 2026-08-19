@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, Check } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -493,19 +493,10 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
           <p className="mx-auto mt-5 max-w-xl text-[17px] font-medium leading-relaxed text-fl-muted">
             Paste one read-only key. The forest is planted by the time you look up.
           </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
+          <div className="mt-9 flex flex-wrap items-center justify-center">
             <Link href="/signup">
               <Button className="h-12 rounded-xl bg-fl-green px-7 text-[15px] font-medium text-white hover:bg-fl-green/90">
                 Start free
-              </Button>
-            </Link>
-            <Link href="/pricing">
-              <Button
-                variant="outline"
-                className="h-12 rounded-xl border-fl-green bg-white px-7 text-[15px] font-medium text-fl-green hover:bg-white hover:text-fl-green"
-              >
-                See pricing
-                <ArrowUpRight className="ml-1 h-4 w-4" />
               </Button>
             </Link>
           </div>
