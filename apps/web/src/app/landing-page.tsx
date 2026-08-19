@@ -13,7 +13,7 @@ import {
   RevenueCatLogo,
   StripeLogo,
   SuperwallLogo,
-} from "./provider-logos";
+} from "@/components/revenue/provider-logos";
 
 /**
  * **The landing page.**

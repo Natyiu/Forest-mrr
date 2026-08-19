@@ -292,13 +292,13 @@ export function ConnectRevenueDialog({
                     aria-checked={selected}
                     onClick={() => reset(candidate.id)}
                     className={cn(
-                      "relative flex h-[68px] flex-col items-center justify-center gap-1.5 rounded-2xl text-[11.5px] font-semibold transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-garden",
+                      "relative flex aspect-square flex-col items-center justify-center gap-2.5 rounded-2xl text-[11.5px] font-semibold transition-colors outline-none cursor-pointer focus-visible:ring-2 focus-visible:ring-garden",
                       selected
                         ? "bg-garden-wash text-ink ring-2 ring-garden"
                         : "bg-inset text-ink-soft hover:bg-inset-strong hover:text-ink",
                     )}
                   >
-                    <ProviderMark provider={candidate} />
+                    <ProviderMark provider={candidate} size="lg" />
                     <span className="leading-none">{candidate.name}</span>
                     {isConnected && (
                       <span

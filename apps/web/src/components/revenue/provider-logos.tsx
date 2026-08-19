@@ -1,13 +1,18 @@
 /**
- * Provider marks for the landing page's trust strip, inlined so they can be
- * tinted with `currentColor` — an `<img>` keeps its own brand colour, and six
- * brand colours in a row is a logo wall, which this page has ruled out.
+ * The six providers' official glyphs, inlined so they can be tinted with
+ * `currentColor`. The landing page's trust strip draws them in ink — an `<img>`
+ * keeps its own brand colour, and six brand colours in a row is a logo wall,
+ * which that page has ruled out — and `ProviderMark` draws them in white or
+ * near-black on each provider's own brand tile, which is the one place a brand
+ * colour is right.
  *
  * Sources: Stripe, Lemon Squeezy, Dodo Payments and RevenueCat are the
  * simple-icons glyphs; Polar is the mark from polarsource/polar
  * (backoffice/static/logo.light.svg); Superwall is the S from superwall.com's
  * own favicon.svg. All are official shapes, none is hand-drawn.
  */
+
+import type { RevenueProviderId } from "@/lib/revenue/providers";
 
 type LogoProps = { className?: string };
 
@@ -59,3 +64,13 @@ export function SuperwallLogo({ className }: LogoProps) {
   );
 }
 
+
+/** Glyph by provider id, for anything that has the id rather than the component. */
+export const PROVIDER_LOGOS: Record<RevenueProviderId, (props: LogoProps) => React.JSX.Element> = {
+  stripe: StripeLogo,
+  polar: PolarLogo,
+  lemonsqueezy: LemonSqueezyLogo,
+  dodopayments: DodoPaymentsLogo,
+  revenuecat: RevenueCatLogo,
+  superwall: SuperwallLogo,
+};
