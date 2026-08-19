@@ -425,19 +425,19 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
       <section className="border-t border-border bg-card/40 py-16 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
           <div>
-            <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-garden">
+            <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-garden">
               Why trust it
             </p>
-            <h2 className="mt-4 text-[30px] font-medium leading-[1.08] tracking-[-0.035em] sm:text-[38px]">
+            <h2 className="mt-4 text-[34px] font-medium leading-[1.08] tracking-[-0.035em] sm:text-[44px]">
               It only ever draws what your provider said
             </h2>
-            <p className="mt-5 max-w-md text-[15px] leading-relaxed text-muted-foreground">
+            <p className="mt-5 max-w-lg text-[17px] leading-relaxed text-muted-foreground">
               A pretty chart of numbers nobody can source is worse than no chart.
               Everything here is one read away from the place your money actually
               arrives.
             </p>
             <Link href="/signup" className="mt-8 inline-block">
-              <Button className="h-11 rounded-xl bg-garden px-6 text-[14px] font-medium text-garden-ink hover:bg-garden-hover">
+              <Button className="h-12 rounded-xl bg-garden px-7 text-[15px] font-medium text-garden-ink hover:bg-garden-hover">
                 Connect a key
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
@@ -448,14 +448,14 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
             {PROMISES.map((promise) => (
               <li
                 key={promise.title}
-                className="flex gap-4 border-b border-border py-5 last:border-0"
+                className="flex gap-4 border-b border-border py-6 last:border-0"
               >
-                <span className="mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full bg-garden-wash text-garden">
-                  <Check className="h-3.5 w-3.5" />
+                <span className="mt-0.5 grid h-7 w-7 shrink-0 place-items-center rounded-full bg-garden-wash text-garden">
+                  <Check className="h-4 w-4" />
                 </span>
                 <div>
-                  <p className="text-[15px] font-medium tracking-tight">{promise.title}</p>
-                  <p className="mt-1.5 text-[13.5px] leading-relaxed text-muted-foreground">
+                  <p className="text-[17px] font-medium tracking-tight">{promise.title}</p>
+                  <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
                     {promise.body}
                   </p>
                 </div>
@@ -473,22 +473,22 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
       */}
       <section className="forest-landing bg-fl-ground py-20 text-center text-fl-ink sm:py-28">
         <div className="mx-auto max-w-6xl px-5">
-          <h2 className="mx-auto max-w-2xl text-[32px] font-medium leading-[1.06] tracking-[-0.04em] sm:text-[44px]">
+          <h2 className="mx-auto max-w-3xl text-[36px] font-medium leading-[1.06] tracking-[-0.04em] sm:text-[52px]">
             Go and look at your business
           </h2>
-          <p className="mx-auto mt-5 max-w-lg text-[15px] leading-relaxed text-fl-muted">
+          <p className="mx-auto mt-5 max-w-xl text-[17px] leading-relaxed text-fl-muted">
             Paste one read-only key. The forest is planted by the time you look up.
           </p>
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-9 flex flex-wrap items-center justify-center gap-3.5">
             <Link href="/signup">
-              <Button className="h-11 rounded-xl bg-fl-green px-6 text-[14px] font-medium text-white hover:bg-fl-green/90">
+              <Button className="h-12 rounded-xl bg-fl-green px-7 text-[15px] font-medium text-white hover:bg-fl-green/90">
                 Start free
               </Button>
             </Link>
             <Link href="/pricing">
               <Button
                 variant="outline"
-                className="h-11 rounded-xl border-fl-green bg-white px-6 text-[14px] font-medium text-fl-green hover:bg-white hover:text-fl-green"
+                className="h-12 rounded-xl border-fl-green bg-white px-7 text-[15px] font-medium text-fl-green hover:bg-white hover:text-fl-green"
               >
                 See pricing
                 <ArrowUpRight className="ml-1 h-4 w-4" />
@@ -501,7 +501,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
       {/* ── Footer ───────────────────────────────────────────────────────── */}
       <footer className="relative border-t border-border py-8">
         <FooterTreeline />
-        <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-5 text-[12.5px] text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
+        <div className="mx-auto flex max-w-6xl flex-col items-start gap-3 px-5 text-[13.5px] text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:justify-between sm:gap-4">
           <span>Forest MRR</span>
           <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
             <Link href="/legal/privacy" className="transition-colors hover:text-foreground">
