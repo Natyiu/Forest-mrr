@@ -90,10 +90,12 @@ export function NewStartupDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md">
+      {/* Skinned on the content, not inherited — same reason as the connect dialog
+          it hands off to: it is portalled, and it opens over the plot. */}
+      <DialogContent className="garden-root garden-skin sm:max-w-md rounded-[24px] border-0 bg-card p-6 shadow-modal ring-1 ring-hairline">
         <DialogHeader>
-          <DialogTitle className="text-[15px]">New startup</DialogTitle>
-          <DialogDescription className="text-[12.5px]">
+          <DialogTitle className="text-[15px] font-bold tracking-tight text-ink">New startup</DialogTitle>
+          <DialogDescription className="text-[12.5px] leading-relaxed text-ink-soft">
             One book of business: its own read-only keys, its own forest. Name it, then
             choose where its money arrives.
           </DialogDescription>
@@ -103,7 +105,7 @@ export function NewStartupDialog({
           <div className="space-y-2">
             <label
               htmlFor="startup-name"
-              className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground"
+              className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint"
             >
               Name
             </label>
@@ -120,7 +122,7 @@ export function NewStartupDialog({
               placeholder="Acme"
               maxLength={60}
               autoFocus
-              className="h-10 text-[13px]"
+              className="h-10 rounded-xl bg-inset/60 text-[13px] focus-visible:bg-card"
             />
           </div>
 
@@ -131,7 +133,7 @@ export function NewStartupDialog({
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 text-[13px]"
+            className="h-9 rounded-full px-4 text-[13px] font-semibold text-ink-soft hover:text-ink"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
@@ -139,7 +141,7 @@ export function NewStartupDialog({
           </Button>
           <Button
             size="sm"
-            className="h-9 text-[13px]"
+            className="h-9 rounded-full px-4 text-[13px] font-bold"
             onClick={submit}
             disabled={isPending || !name.trim()}
           >

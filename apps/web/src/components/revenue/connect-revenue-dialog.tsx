@@ -237,10 +237,17 @@ export function ConnectRevenueDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg max-h-[85vh] overflow-y-auto">
+      {/*
+        `garden-skin` is on the content, not inherited: the dialog is portalled to
+        `<body>`, outside the shell's bridge, and on `/dashboard` there is no shell
+        at all. Without it the form opens over the plot in the host app's violet
+        and grey — a second product in a window over the first. The shape is the
+        garden's `Surface`: 20px+ radius, lifted by shadow, no border.
+      */}
+      <DialogContent className="garden-root garden-skin sm:max-w-lg max-h-[85vh] overflow-y-auto rounded-[24px] border-0 bg-card p-6 shadow-modal ring-1 ring-hairline">
         <DialogHeader>
-          <DialogTitle className="text-sm">Connect your revenue</DialogTitle>
-          <DialogDescription className="text-[11px]">
+          <DialogTitle className="text-[15px] font-bold tracking-tight text-ink">Connect your revenue</DialogTitle>
+          <DialogDescription className="text-[12px] leading-relaxed text-ink-soft">
             Import a read-only API key so we can read your live revenue. Keys are stored
             encrypted, and nothing here can move money.
           </DialogDescription>
@@ -248,14 +255,15 @@ export function ConnectRevenueDialog({
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            <label className="text-[10.5px] font-bold uppercase tracking-[0.12em] text-ink-faint">
               Choose your payment provider
             </label>
             <Select value={providerId} onValueChange={(next) => reset(next as RevenueProviderId)}>
-              <SelectTrigger className="h-10 text-xs">
+              <SelectTrigger className="h-10 rounded-full border-0 bg-inset px-3.5 text-xs font-semibold text-ink hover:bg-inset-strong">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              {/* Portalled too, so it carries the skin itself. */}
+              <SelectContent className="garden-root garden-skin rounded-2xl border-0 p-1 shadow-modal ring-1 ring-hairline">
                 {REVENUE_PROVIDER_LIST.map((candidate) => (
                   <SelectItem key={candidate.id} value={candidate.id} className="text-xs">
                     <span className="flex items-center gap-2">
@@ -371,7 +379,7 @@ export function ConnectRevenueDialog({
                     onChange={(event) => set(step.name, event.target.value)}
                     placeholder={step.placeholder}
                     aria-invalid={Boolean(error)}
-                    className="h-10 font-mono text-xs"
+                    className="h-10 rounded-xl bg-inset/60 font-mono text-xs focus-visible:bg-card"
                   />
                 )}
 
@@ -393,13 +401,13 @@ export function ConnectRevenueDialog({
           <Button
             variant="ghost"
             size="sm"
-            className="h-8 text-xs"
+            className="h-9 rounded-full px-4 text-xs font-semibold text-ink-soft hover:text-ink"
             onClick={() => onOpenChange(false)}
             disabled={isPending}
           >
             Cancel
           </Button>
-          <Button onClick={submit} disabled={isPending} size="sm" className="h-8 text-xs">
+          <Button onClick={submit} disabled={isPending} size="sm" className="h-9 rounded-full px-4 text-xs font-bold">
             {isPending ? (
               <>
                 <Loader2 className="size-3 animate-spin" />
@@ -446,13 +454,13 @@ function StepHeading({
  */
 function Help({ card }: { card: HelpCard }) {
   return (
-    <div className="rounded-xl border border-border bg-muted/50 p-3">
+    <div className="rounded-2xl bg-inset p-3.5">
       <div className="flex items-start justify-between gap-3">
         <a
           href={card.href}
           target="_blank"
           rel="noreferrer noopener"
-          className="text-[11px] font-semibold text-foreground underline-offset-4 hover:underline"
+          className="text-[12px] font-bold text-ink underline-offset-4 hover:underline"
         >
           {card.title}
         </a>
@@ -468,7 +476,7 @@ function Help({ card }: { card: HelpCard }) {
       </div>
       <ol className="mt-1.5 space-y-0.5">
         {card.steps.map((line, index) => (
-          <li key={line} className="text-[11px] leading-relaxed text-muted-foreground">
+          <li key={line} className="text-[11.5px] leading-relaxed text-ink-soft">
             {index + 1}. {line}
           </li>
         ))}
@@ -516,10 +524,10 @@ function RemoteSelect({
 
   return (
     <Select value={value} onValueChange={onChange} disabled={!options.length}>
-      <SelectTrigger className="h-10 text-xs">
+      <SelectTrigger className="h-10 rounded-full border-0 bg-inset px-3.5 text-xs font-semibold text-ink hover:bg-inset-strong">
         <SelectValue placeholder={options.length ? placeholder : emptyPlaceholder} />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="garden-root garden-skin rounded-2xl border-0 p-1 shadow-modal ring-1 ring-hairline">
         {groups.map((group) => {
           const inGroup = options.filter((option) => (option.group ?? "") === group);
           if (!group) {
