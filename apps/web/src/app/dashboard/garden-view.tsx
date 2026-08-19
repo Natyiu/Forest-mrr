@@ -8,6 +8,7 @@ import { useTheme } from "next-themes";
 import { ThemeProvider } from "@/garden/lib/ThemeContext";
 import { ConnectRevenueDialog } from "@/components/revenue/connect-revenue-dialog";
 import { listRevenueConnections, type RevenueConnectionView } from "@/lib/actions/revenue";
+import { REVENUE_PROVIDER_LIST } from "@/lib/revenue/providers";
 
 import { GardenAccount, type GardenAccountProps } from "./garden-account";
 import { GardenStartup } from "./garden-startup";
@@ -93,15 +94,22 @@ export function GardenView({
         brandSlot={<GardenBrand />}
         navSlot={<GardenNav />}
         accountSlot={<GardenAccount {...account} />}
+        // A switcher with nothing to switch between is a control that says "No
+        // startup yet" in the corner of a screen already saying it in the middle.
+        // Until there is a business, there is no slot; the first one is made by
+        // the connect dialog the empty plot offers.
         startupSlot={
-          <GardenStartup
-            initialName={startup.name}
-            initialEmoji={startup.emoji}
-            initialImage={startup.image}
-            isAll={startup.isAll}
-          />
+          startup.isAll || startup.name ? (
+            <GardenStartup
+              initialName={startup.name}
+              initialEmoji={startup.emoji}
+              initialImage={startup.image}
+              isAll={startup.isAll}
+            />
+          ) : undefined
         }
         onConnectRevenue={openConnect}
+        providerNames={REVENUE_PROVIDER_LIST.map((provider) => provider.name)}
         // The route is the host app's to know, so the plot is handed a callback
         // — the same arrangement as the connect dialog above it.
         onCleanView={() => router.push("/dashboard/tv" as never)}

@@ -907,10 +907,39 @@
   animation: garden-sprout 4s cubic-bezier(0.22, 1.2, 0.36, 1) infinite;
 }
 
+/* The empty plot's legend specimens: the same growth, once, and then still.
+   A loop here would be three trees forever sprouting beside a button — motion
+   with nothing to wait for. */
+@keyframes garden-grow-once {
+  0% {
+    transform: scale(0.05);
+    opacity: 0;
+  }
+  30% {
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.garden-grow-once {
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+  opacity: 0;
+  animation: garden-grow-once 0.9s cubic-bezier(0.22, 1.2, 0.36, 1) both;
+}
+
 /* The scene still says "planting"; it just stops moving. */
 @media (prefers-reduced-motion: reduce) {
-  .garden-sprout {
+  .garden-sprout,
+  .garden-grow-once {
     animation: none;
+    opacity: 1;
   }
 }
 

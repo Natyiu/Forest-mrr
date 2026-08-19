@@ -45,6 +45,7 @@ import { Toolbar, type Tool } from './components/hud/Toolbar';
 import { Surface } from './components/hud/ui';
 import { ControlBar } from './components/hud/ControlBar';
 import { PlantingAnimation } from './components/hud/PlantingAnimation';
+import { UnplantedBed } from './components/hud/UnplantedBed';
 import { FilterPopover } from './components/hud/FilterPopover';
 import { AppearancePopover } from './components/hud/AppearancePopover';
 import { ActivityToasts, type Activity, type ActivityKind } from './components/hud/ActivityToasts';
@@ -133,6 +134,7 @@ const EMPTY_GARDEN: GardenState = {
 function EmptyPlot({
   book,
   onConnectRevenue,
+  providerNames,
   accountSlot,
   startupSlot,
   brandSlot,
@@ -140,6 +142,7 @@ function EmptyPlot({
 }: {
   book: { kind: 'loading' | 'live' | 'empty'; providers?: string[]; note?: string };
   onConnectRevenue?: () => void;
+  providerNames?: string[];
   accountSlot?: React.ReactNode;
   startupSlot?: React.ReactNode;
   brandSlot?: React.ReactNode;
@@ -192,57 +195,108 @@ function EmptyPlot({
             </p>
           </div>
         ) : (
-        <div className="max-w-md rounded-[20px] bg-surface p-6 text-center shadow-panel">
-          <div className="mx-auto mb-3 grid h-10 w-10 place-items-center rounded-2xl bg-garden-wash text-garden-soft">
-            <Sprout className="h-5 w-5" />
+        /*
+          **The card is the picture, then the sentence.**
+
+          It stands where the plot will, so it shows the plot's vocabulary before it
+          explains it: a bed drawn in the season's own pigments, with the three things
+          a subscription can become on it — a tree, an amber tree, a stump — named
+          underneath, and dashed outlines where the rest will go. The copy under it
+          is then a caption, and the one button is the only thing on the screen that
+          is not green turf, which is what makes it the thing to press.
+        */
+        <div className="relative w-full max-w-[600px] overflow-hidden rounded-[28px] bg-surface-solid text-center shadow-modal">
+          {/* The painted band: wash, a soft glow behind the bed, and the bed itself. */}
+          <div className="relative overflow-hidden bg-garden-wash px-6 pb-2 pt-9">
+            <div
+              aria-hidden
+              className="pointer-events-none absolute inset-x-0 -top-24 mx-auto h-56 w-[75%] rounded-full bg-garden opacity-[0.14] blur-3xl"
+            />
+            <div className="relative mx-auto">
+              <UnplantedBed variant={connected ? 'waiting' : 'legend'} />
+            </div>
           </div>
 
-          {connected ? (
-            <>
-              <p className="text-sm font-semibold text-ink">Nothing to plant yet</p>
-              <p className="mt-1 text-xs text-ink-soft">
-                {book.note ??
-                  `${book.providers!.join(' · ')} is connected and answering — it has no
-                   subscriptions in it yet.`}{' '}
-                The first one will appear here as a tree.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="text-sm font-semibold text-ink">Your garden is unplanted</p>
-              <p className="mt-1 text-xs text-ink-soft">
-                Connect the place your money arrives and every subscription becomes a
-                tree: plans as beds, failing payments in amber, churn as stumps.
-              </p>
-            </>
-          )}
+          <div className="px-8 pb-8 pt-6 sm:px-10">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-garden-wash px-2.5 py-1 text-[10.5px] font-bold uppercase tracking-[0.12em] text-garden-soft">
+              <Sprout className="h-3 w-3" />
+              {connected ? 'Connected · no subscriptions yet' : 'Nothing connected yet'}
+            </span>
 
-          {onConnectRevenue && !connected && (
-            <button
-              type="button"
-              onClick={onConnectRevenue}
-              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-garden px-3.5 py-2 text-xs font-bold text-garden-ink transition-colors hover:bg-garden-hover cursor-pointer"
-            >
-              <Plug className="h-3.5 w-3.5" />
-              Connect revenue
-            </button>
-          )}
+            {connected ? (
+              <>
+                <h2 className="mt-3 text-[26px] font-extrabold leading-[1.1] tracking-[-0.02em] text-ink">
+                  Nothing to plant yet
+                </h2>
+                <p className="mx-auto mt-2.5 max-w-[46ch] text-[14px] leading-relaxed text-ink-soft">
+                  {book.note ??
+                    `${book.providers!.join(' · ')} is connected and answering — it has no
+                     subscriptions in it yet.`}{' '}
+                  The first one will come up here as a tree.
+                </p>
+              </>
+            ) : (
+              <>
+                <h2 className="mt-3 text-[26px] font-extrabold leading-[1.1] tracking-[-0.02em] text-ink">
+                  Your garden is unplanted
+                </h2>
+                <p className="mx-auto mt-2.5 max-w-[46ch] text-[14px] leading-relaxed text-ink-soft">
+                  Connect the place your money arrives and every subscription becomes a
+                  tree &mdash; each plan its own bed, failing payments in amber, churn as
+                  stumps. One read-only key, and the plot plants itself.
+                </p>
+              </>
+            )}
 
-          {connected && (
-            /*
-              Points at the startup's own settings rather than the imported-data page.
-              This file cannot read the host app's `ENABLED_PAGES` — the garden is a
-              self-contained port and importing `@/lib` here would break the
-              standalone copy — so it links to the one place that is always there.
-            */
-            <a
-              href="/dashboard/startups"
-              className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-inset px-3.5 py-2 text-xs font-bold text-ink-soft transition-colors hover:text-ink"
-            >
-              <BarChart3 className="h-3.5 w-3.5" />
-              Manage this startup&rsquo;s providers
-            </a>
-          )}
+            {onConnectRevenue && !connected && (
+              <button
+                type="button"
+                onClick={onConnectRevenue}
+                className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-garden px-6 text-[14px] font-bold text-garden-ink shadow-panel transition-[background-color,transform] hover:bg-garden-hover active:scale-[0.98] cursor-pointer"
+              >
+                <Plug className="h-4 w-4" />
+                Connect revenue
+              </button>
+            )}
+
+            {connected && (
+              /*
+                Points at the startup's own settings rather than the imported-data page.
+                This file cannot read the host app's `ENABLED_PAGES` — the garden is a
+                self-contained port and importing `@/lib` here would break the
+                standalone copy — so it links to the one place that is always there.
+              */
+              <a
+                href="/dashboard/startups"
+                className="mt-6 inline-flex h-11 items-center gap-2 rounded-full bg-inset px-6 text-[14px] font-bold text-ink-soft transition-colors hover:text-ink"
+              >
+                <BarChart3 className="h-4 w-4" />
+                Manage this startup&rsquo;s providers
+              </a>
+            )}
+
+            {/*
+              Which providers, named rather than counted. The list is the host app's
+              (`REVENUE_PROVIDER_LIST`) handed down as names, so this file keeps its
+              rule of importing nothing from `@/lib` and the row cannot drift from the
+              dialog the button opens. Without it, no row.
+            */}
+            {!connected && providerNames && providerNames.length > 0 && (
+              <div className="mt-6 flex flex-wrap items-center justify-center gap-x-2 gap-y-1.5 border-t border-hairline pt-5">
+                <span className="mr-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-faint">
+                  Works with
+                </span>
+                {providerNames.map((name) => (
+                  <span
+                    key={name}
+                    className="rounded-full bg-inset px-2.5 py-1 text-[11.5px] font-semibold text-ink-soft"
+                  >
+                    {name}
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
         )}
       </main>
@@ -271,6 +325,7 @@ export default function App({
   brandSlot,
   navSlot,
   onConnectRevenue,
+  providerNames,
   onCleanView,
   clean = false,
 }: {
@@ -282,6 +337,12 @@ export default function App({
   /** The plot's three ways out, dead centre: it has no sidebar of its own. */
   navSlot?: React.ReactNode;
   onConnectRevenue?: () => void;
+  /**
+   * The payment providers the connect dialog offers, by name, for the empty
+   * plot's "works with" row. Handed down rather than imported, for the reason
+   * `onConnectRevenue` is a callback: this file knows nothing of the host app.
+   */
+  providerNames?: string[];
   /**
    * Wall-display mode: **the plot, and nothing on top of it.**
    *
@@ -1115,6 +1176,7 @@ export default function App({
       <EmptyPlot
         book={book}
         onConnectRevenue={onConnectRevenue}
+        providerNames={providerNames}
         accountSlot={accountSlot}
         startupSlot={startupSlot}
         brandSlot={brandSlot}
