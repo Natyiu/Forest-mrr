@@ -8,7 +8,6 @@ import { useTheme } from "next-themes";
 import { ThemeProvider } from "@/garden/lib/ThemeContext";
 import { ConnectRevenueDialog } from "@/components/revenue/connect-revenue-dialog";
 import { listRevenueConnections, type RevenueConnectionView } from "@/lib/actions/revenue";
-import { REVENUE_PROVIDER_LIST } from "@/lib/revenue/providers";
 
 import { GardenAccount, type GardenAccountProps } from "./garden-account";
 import { GardenStartup } from "./garden-startup";
@@ -109,7 +108,6 @@ export function GardenView({
           ) : undefined
         }
         onConnectRevenue={openConnect}
-        providerNames={REVENUE_PROVIDER_LIST.map((provider) => provider.name)}
         // The route is the host app's to know, so the plot is handed a callback
         // — the same arrangement as the connect dialog above it.
         onCleanView={() => router.push("/dashboard/tv" as never)}
