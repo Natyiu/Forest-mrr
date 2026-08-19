@@ -54,20 +54,26 @@ export function ThemeToggle() {
 
 /**
  * The same switch, parked in the top-right corner of pages that have no chrome
- * of their own — auth, onboarding, legal, verify-email.
+ * of their own — auth, legal, verify-email.
  *
  * It stands down wherever a page already puts the toggle in a header of its own:
  * `/dashboard` and `/admin` carry it in their top bar, and the landing page has
  * one in its nav. Two of these on one screen is the thing this whole change was
  * meant to stop — and on a page with a sticky header they would overlap, since
  * both want the same corner.
+ *
+ * The auth screens go without one entirely: they are a painted poster like the
+ * landing band, half the screen is artwork that ignores the theme anyway, and a
+ * person passing through a login is not there to change settings.
  */
 const OWNS_ITS_OWN = ["/dashboard", "/admin"];
+const NO_TOGGLE = ["/signup", "/login", "/forgot-password", "/reset-password"];
 
 export function FloatingThemeToggle() {
   const pathname = usePathname();
   if (pathname === "/") return null;
   if (OWNS_ITS_OWN.some((route) => pathname.startsWith(route))) return null;
+  if (NO_TOGGLE.some((route) => pathname.startsWith(route))) return null;
 
   return (
     <div className="fixed right-4 top-4 z-50">

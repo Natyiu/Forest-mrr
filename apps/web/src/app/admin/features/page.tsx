@@ -11,7 +11,6 @@ import { Separator } from "@/components/ui/separator";
 import { FeatureTogglesSkeleton } from "@/components/skeletons";
 
 type AppSettings = {
-  onboardingEnabled: boolean;
   emailVerificationEnabled: boolean;
   forgotPasswordEnabled: boolean;
   socialLoginEnabled: boolean;
@@ -24,11 +23,6 @@ const features: {
   label: string;
   description: string;
 }[] = [
-  {
-    key: "onboardingEnabled",
-    label: "Onboarding Flow",
-    description: "New users see a setup wizard after their first sign-in.",
-  },
   {
     key: "emailVerificationEnabled",
     label: "Email Verification",

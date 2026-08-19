@@ -91,25 +91,6 @@ export async function updateProfile(data: {
   return { success: true };
 }
 
-export async function completeOnboarding() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user) throw new Error("Unauthorized");
-
-  await prisma.user.update({
-    where: { id: session.user.id },
-    data: { onboardingCompleted: true },
-  });
-
-  await notifyUser(session.user.id, {
-    title: "Onboarding completed",
-    description: "You've completed the onboarding flow. Welcome to the dashboard!",
-    tag: "general",
-    senderId: session.user.id,
-  });
-
-  return { success: true };
-}
-
 export async function getAppSettings() {
   try {
     let settings = await prisma.appSettings.findUnique({

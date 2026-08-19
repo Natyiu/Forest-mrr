@@ -31,7 +31,7 @@ export default async function DashboardLayout({
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { onboardingCompleted: true, emailVerified: true },
+    select: { emailVerified: true },
   });
 
   if (
@@ -47,10 +47,6 @@ export default async function DashboardLayout({
     !user.emailVerified
   ) {
     redirect("/verify-email" as never);
-  }
-
-  if (user && !user.onboardingCompleted && settings.onboardingEnabled) {
-    redirect("/onboarding" as never);
   }
 
   const [unreadCount, scope] = await Promise.all([

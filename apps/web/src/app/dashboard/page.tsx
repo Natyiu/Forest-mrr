@@ -11,7 +11,7 @@ import { GardenView } from "./garden-view";
  *
  * It replaced `DashboardHome` — the card grid of links — which is still
  * exported from `./dashboard-shell` if it is ever wanted back. Auth, email
- * verification, onboarding and maintenance are all settled by
+ * verification and maintenance are all settled by
  * `dashboard/layout.tsx` before this renders, so the session read below cannot
  * come back empty; it is here for the *contents* of the account menu, not as a
  * second gate.

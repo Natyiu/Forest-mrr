@@ -150,10 +150,10 @@ export const auth = betterAuth({
       const settings = await getSettings();
       if (!settings?.emailVerificationEnabled) return;
       const appName = settings.appName ?? "Batman";
-      // Redirect to onboarding after verification
+      // Land on the dashboard after verification
       try {
         const urlObj = new URL(url);
-        urlObj.searchParams.set("callbackURL", "/onboarding");
+        urlObj.searchParams.set("callbackURL", "/dashboard");
         url = urlObj.toString();
       } catch {
         // url might be relative, keep as-is
@@ -173,12 +173,6 @@ export const auth = betterAuth({
   user: {
     additionalFields: {
       bio: { type: "string", required: false, input: true },
-      onboardingCompleted: {
-        type: "boolean",
-        required: false,
-        defaultValue: false,
-        input: true,
-      },
     },
   },
 

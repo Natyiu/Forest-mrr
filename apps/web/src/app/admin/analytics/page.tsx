@@ -16,7 +16,6 @@ import {
   Users,
   Activity,
   UserPlus,
-  CheckCircle,
   Building2,
   Bell,
   TrendingUp,
@@ -364,21 +363,13 @@ export default function AdminAnalyticsPage() {
         />
       </div>
 
-      {/* Row 2: Ring gauges for rates */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        <RingGauge
-          value={overview.onboardingRate}
-          label="Onboarding"
-          sub={`${overview.onboardedUsers} of ${overview.totalUsers} users completed onboarding`}
-          icon={CheckCircle}
-        />
-        <RingGauge
-          value={overview.notificationReadRate}
-          label="Notification Read Rate"
-          sub="Percentage of delivered notifications that were read"
-          icon={Bell}
-        />
-      </div>
+      {/* Row 2: Ring gauge for the read rate */}
+      <RingGauge
+        value={overview.notificationReadRate}
+        label="Notification Read Rate"
+        sub="Percentage of delivered notifications that were read"
+        icon={Bell}
+      />
 
       {/* Row 3: Growth & engagement area chart with cumulative line */}
       <ChartCard

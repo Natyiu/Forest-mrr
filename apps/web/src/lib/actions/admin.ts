@@ -47,20 +47,7 @@ export async function getLegalContent(slug: "privacy" | "terms") {
   return content || null;
 }
 
-export async function toggleOnboarding(enabled: boolean) {
-  await requireAdmin();
-
-  const settings = await prisma.appSettings.upsert({
-    where: { id: "default" },
-    update: { onboardingEnabled: enabled },
-    create: { id: "default", onboardingEnabled: enabled },
-  });
-
-  return settings;
-}
-
 export async function updateAppSettings(data: {
-  onboardingEnabled?: boolean;
   appName?: string;
   appDescription?: string;
   appUrl?: string;
@@ -281,7 +268,6 @@ export async function getOverview() {
     totalUsers,
     usersLast7d,
     usersLast30d,
-    onboardedUsers,
     dailyActiveUsers,
     weeklyActiveUsers,
     recentUsers,
@@ -300,7 +286,6 @@ export async function getOverview() {
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
     prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
-    prisma.user.count({ where: { onboardingCompleted: true } }),
     prisma.session
       .groupBy({ by: ["userId"], where: { createdAt: { gte: oneDayAgo } } })
       .then((r) => r.length),
@@ -389,8 +374,6 @@ export async function getOverview() {
     sparkline.push({ signups, active: activeSet.size });
   }
 
-  const onboardingRate =
-    totalUsers > 0 ? Math.round((onboardedUsers / totalUsers) * 100) : 0;
   const notificationReadRate =
     totalRecipients > 0
       ? Math.round(((totalRecipients - unreadRecipients) / totalRecipients) * 100)
@@ -410,8 +393,6 @@ export async function getOverview() {
       usersLast30d,
       dailyActiveUsers,
       weeklyActiveUsers,
-      onboardingRate,
-      onboardedUsers,
       notificationReadRate,
       totalOrgs,
       totalMembers,
@@ -450,7 +431,6 @@ export async function getAnalytics() {
 
   const [
     totalUsers,
-    onboardedUsers,
     usersLast7d,
     usersLast30d,
     recentSignups,
@@ -464,7 +444,6 @@ export async function getAnalytics() {
     totalRecipients,
   ] = await Promise.all([
     prisma.user.count(),
-    prisma.user.count({ where: { onboardingCompleted: true } }),
     prisma.user.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
     prisma.user.count({ where: { createdAt: { gte: thirtyDaysAgo } } }),
     prisma.user.findMany({
@@ -594,8 +573,6 @@ export async function getAnalytics() {
     (a, b) => b.count - a.count
   );
 
-  const onboardingRate =
-    totalUsers > 0 ? Math.round((onboardedUsers / totalUsers) * 100) : 0;
   const notificationReadRate =
     totalRecipients > 0
       ? Math.round(((totalRecipients - unreadRecipients) / totalRecipients) * 100)
@@ -608,8 +585,6 @@ export async function getAnalytics() {
       usersLast30d,
       dailyActiveUsers,
       weeklyActiveUsers,
-      onboardedUsers,
-      onboardingRate,
       notificationReadRate,
     },
     dailyData,

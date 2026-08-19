@@ -15,7 +15,7 @@ export function VerifyEmailForm({ email }: { email: string }) {
     try {
       await authClient.sendVerificationEmail({
         email,
-        callbackURL: "/onboarding",
+        callbackURL: "/dashboard",
       });
       toast.success("Verification email sent. Check your inbox.");
     } catch {

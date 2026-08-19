@@ -270,23 +270,6 @@ export default function AdminOverviewPage() {
         </Stat>
 
         <Stat
-          label="Onboarding"
-          icon={CheckCircle}
-          footer={
-            <span>
-              {stats.onboardedUsers} of {stats.totalUsers} completed
-            </span>
-          }
-        >
-          <div className="flex items-center gap-3">
-            <RingGauge value={stats.onboardingRate} />
-            <p className="text-3xl font-semibold tracking-tight leading-none">
-              {stats.onboardingRate}%
-            </p>
-          </div>
-        </Stat>
-
-        <Stat
           label="Notifications"
           icon={Bell}
           footer={<span>read rate</span>}
