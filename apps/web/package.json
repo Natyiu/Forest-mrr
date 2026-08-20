@@ -5,7 +5,7 @@
   "scripts": {
     "postinstall": "node -e \"const fs=require('fs');const env='.env';const example='.env.example';if(!fs.existsSync(env)){if(fs.existsSync(example)){fs.copyFileSync(example,env);console.log('Created .env from .env.example — fill in DATABASE_URL, BETTER_AUTH_SECRET, etc.');}else{const defaultEnv='BETTER_AUTH_SECRET=dev-secret-please-change-me-1234567890\\nBETTER_AUTH_URL=http://localhost:3001\\nCORS_ORIGIN=http://localhost:3001\\nDATABASE_URL=postgresql://postgres:postgres@localhost:5432/batman_dev\\nDIRECT_URL=postgresql://postgres:postgres@localhost:5432/batman_dev\\n';fs.writeFileSync(env,defaultEnv);console.log('Created .env with default development values — update DATABASE_URL, BETTER_AUTH_SECRET, etc.');}}\"",
     "dev": "next dev --port 3001",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start"
   },
   "dependencies": {
