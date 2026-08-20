@@ -1146,3 +1146,35 @@
   --fl-ink: #000000;
   --fl-muted: #577B64;
 }
+
+/*
+  The landing page's provider strip on a phone: a marquee rather than a
+  three-deep wrapped stack. The track holds two identical copies of the row
+  (the second aria-hidden) and slides by exactly half its own width, so the
+  loop is seamless — each copy carries its own trailing gap as padding, which
+  is what makes -50% land on a join rather than half a gap short of one.
+  The mask fades the cut edges so names slide in and out instead of clipping.
+*/
+.fl-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 8%, black 92%, transparent);
+}
+.fl-marquee-track {
+  animation: fl-marquee 22s linear infinite;
+}
+@keyframes fl-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  /* Still, and scrollable by hand — the second copy keeps the row from
+     looking truncated at the fold. */
+  .fl-marquee {
+    overflow-x: auto;
+    mask-image: none;
+  }
+  .fl-marquee-track {
+    animation: none;
+  }
+}

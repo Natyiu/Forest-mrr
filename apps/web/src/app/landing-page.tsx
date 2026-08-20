@@ -359,13 +359,40 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
             `<img>`s, so the row is one muted colour instead of six brand hues —
             named providers, not a logo wall.
           */}
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-8 gap-y-4 sm:mt-8 sm:gap-x-11 sm:gap-y-5">
+          {/*
+            Below `sm` the six names are a marquee rather than a wrapped stack —
+            three ragged centred rows on a phone read as a lump, and a single
+            sliding row keeps the strip one line tall. The track is two copies
+            of the row (the second hidden from the accessibility tree, so the
+            list is announced once) sliding by half its own width; the CSS is
+            `.fl-marquee` in index.css, and it stands still for
+            `prefers-reduced-motion`.
+          */}
+          {/* -mx-5 undoes the container's padding so the row runs edge to edge under the fade. */}
+          <div className="fl-marquee -mx-5 mt-6 sm:hidden">
+            <div className="fl-marquee-track flex w-max items-center">
+              {[0, 1].map((copy) => (
+                <div key={copy} aria-hidden={copy === 1} className="flex items-center gap-8 pr-8">
+                  {PROVIDERS.map(({ name, Logo }) => (
+                    <span
+                      key={name}
+                      className="flex items-center gap-2.5 whitespace-nowrap text-[19px] font-medium tracking-tight text-foreground/55"
+                    >
+                      <Logo className="h-6 w-6 shrink-0" />
+                      {name}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-8 hidden flex-wrap items-center justify-center gap-x-11 gap-y-5 sm:flex">
             {PROVIDERS.map(({ name, Logo }) => (
               <span
                 key={name}
-                className="flex items-center gap-2.5 text-[19px] font-medium tracking-tight text-foreground/55 sm:text-[22px]"
+                className="flex items-center gap-2.5 text-[22px] font-medium tracking-tight text-foreground/55"
               >
-                <Logo className="h-6 w-6 shrink-0 sm:h-7 sm:w-7" />
+                <Logo className="h-7 w-7 shrink-0" />
                 {name}
               </span>
             ))}
