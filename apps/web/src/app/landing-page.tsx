@@ -281,7 +281,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
                 How it works
               </a>
               <Link
-                href="/signin"
+                href="/login"
                 className="rounded-full px-3 py-2 text-[13px] font-medium text-fl-muted transition-colors hover:text-fl-ink"
               >
                 Sign in
