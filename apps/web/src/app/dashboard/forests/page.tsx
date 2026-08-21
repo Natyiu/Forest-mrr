@@ -92,7 +92,7 @@ export default async function ForestsPage({
       },
     }),
     prisma.startup.count({ where: { userId: session.user.id, isPublic: true } }),
-    getAdSpots(),
+    getAdSpots("forests"),
   ]);
 
   // Only shelves somebody is standing on get a pill — a filter that always

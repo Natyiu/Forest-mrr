@@ -25,6 +25,39 @@ export async function POST(req: NextRequest) {
     const type = (event as { type?: string }).type;
     const data = event.data as Record<string, unknown> | undefined;
 
+    // A paid ad order fills the spot it was bought for, automatically. Polar
+    // copies checkout metadata onto the order, so everything the box needs —
+    // which page, the company, its line, its link — arrives here. Keyed on the
+    // order id so a re-delivered webhook fills it once, not twice.
+    if (data && (type === "order.paid" || type === "order.created")) {
+      const paid =
+        type === "order.paid" ||
+        String((data as { status?: string }).status ?? "") === "paid";
+      const metadata =
+        ((data as { metadata?: Record<string, unknown> }).metadata ??
+          {}) as Record<string, unknown>;
+
+      if (paid && metadata.kind === "ad-spot") {
+        const orderId = String((data as { id?: string }).id ?? "");
+        const placementRaw = String(metadata.placement ?? "bundle");
+        const placement = ["garden", "forests", "bundle"].includes(placementRaw)
+          ? placementRaw
+          : "bundle";
+        const name = String(metadata.company ?? "").trim();
+        const tagline = String(metadata.tagline ?? "").trim();
+        const href = String(metadata.website ?? "").trim();
+
+        if (orderId && name && href) {
+          await prisma.adSpot.upsert({
+            where: { orderId },
+            create: { orderId, name, tagline, href, placement },
+            update: {},
+          });
+        }
+      }
+      return NextResponse.json({ received: true });
+    }
+
     if (!type?.startsWith("subscription.")) {
       return NextResponse.json({ received: true });
     }

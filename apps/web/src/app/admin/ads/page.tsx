@@ -28,6 +28,7 @@ export default function AdminAdsPage() {
   const [tagline, setTagline] = useState("");
   const [href, setHref] = useState("");
   const [image, setImage] = useState("");
+  const [placement, setPlacement] = useState<"garden" | "forests" | "bundle">("bundle");
 
   const load = () => {
     listAdSpots()
@@ -43,6 +44,7 @@ export default function AdminAdsPage() {
         tagline,
         href,
         image: image || undefined,
+        placement,
       });
       if (!result.ok) {
         setError(result.message);
@@ -53,6 +55,7 @@ export default function AdminAdsPage() {
       setTagline("");
       setHref("");
       setImage("");
+      setPlacement("bundle");
       load();
     });
   };
@@ -89,6 +92,32 @@ export default function AdminAdsPage() {
           <Input value={href} onChange={(e) => setHref(e.target.value)} placeholder="Website (acme.com)" maxLength={300} className="h-9" />
           <Input value={tagline} onChange={(e) => setTagline(e.target.value)} placeholder="One line on what it does" maxLength={120} className="h-9 sm:col-span-2" />
           <Input value={image} onChange={(e) => setImage(e.target.value)} placeholder="Logo URL or /ads/file.png (optional)" maxLength={300} className="h-9 sm:col-span-2" />
+          <div className="sm:col-span-2">
+            <label className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+              Shows on
+            </label>
+            <div className="flex flex-wrap gap-1.5">
+              {([
+                ["bundle", "Both pages ($700)"],
+                ["garden", "Garden only ($500)"],
+                ["forests", "Forests only ($300)"],
+              ] as const).map(([value, label]) => (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => setPlacement(value)}
+                  aria-pressed={placement === value}
+                  className={`rounded-full border px-3 py-1.5 text-xs font-medium transition-colors ${
+                    placement === value
+                      ? "border-primary/50 bg-primary/10 text-foreground"
+                      : "border-border text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
         {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
         <Button size="sm" className="mt-3 h-9 text-xs" onClick={add} disabled={isPending || !name.trim() || !tagline.trim() || !href.trim()}>
@@ -124,7 +153,16 @@ export default function AdminAdsPage() {
                   </span>
                 )}
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium">{row.name}</p>
+                  <div className="flex items-center gap-2">
+                    <p className="truncate text-sm font-medium">{row.name}</p>
+                    <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
+                      {row.placement === "garden"
+                        ? "Garden"
+                        : row.placement === "forests"
+                          ? "Forests"
+                          : "Both pages"}
+                    </span>
+                  </div>
                   <p className="truncate text-xs text-muted-foreground">{row.tagline}</p>
                 </div>
                 <a

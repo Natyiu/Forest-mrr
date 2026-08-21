@@ -79,7 +79,16 @@ async function polarClient(): Promise<Polar | null> {
 export async function createAdCheckout(
   raw: unknown,
 ): Promise<{ ok: true; url: string } | { ok: false; message: string }> {
-  const session = await requireSession();
+  // Auth first, and as a *returned* result rather than a throw: a thrown
+  // server action becomes an unhandled rejection on the client and Next paints
+  // its error page. An expired session while the form was open must land the
+  // buyer on a message, not a crash.
+  let session;
+  try {
+    session = await requireSession();
+  } catch {
+    return { ok: false, message: "Your session expired — refresh and try again." };
+  }
 
   const parsed = input.safeParse(raw);
   if (!parsed.success) {

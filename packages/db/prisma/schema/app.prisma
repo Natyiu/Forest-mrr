@@ -66,6 +66,17 @@ model AdSpot {
   tagline   String
   href      String
   image     String?
+
+  /// Which surface this spot was bought for: "garden", "forests", or "bundle".
+  /// The garden strip shows garden + bundle; the forests rails show forests +
+  /// bundle — so a company appears exactly where it paid to appear.
+  placement String @default("bundle")
+
+  /// The Polar order that paid for it, when it arrived by webhook. Unique, so a
+  /// re-delivered webhook fills the spot once rather than twice. Null for rows
+  /// an admin added by hand.
+  orderId String? @unique
+
   createdAt DateTime @default(now())
 
   @@map("ad_spot")

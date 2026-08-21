@@ -40,7 +40,7 @@ export default async function DashboardPage() {
     ? await resolveScope(session.user.id)
     : { active: null, activeId: null };
 
-  const adSpots = await getAdSpots();
+  const adSpots = await getAdSpots("garden");
 
   return (
     <>

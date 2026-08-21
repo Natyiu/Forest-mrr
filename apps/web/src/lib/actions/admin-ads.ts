@@ -29,6 +29,7 @@ export interface AdSpotRow {
   tagline: string;
   href: string;
   image: string | null;
+  placement: string;
   createdAt: string;
 }
 
@@ -41,6 +42,7 @@ export async function listAdSpots(): Promise<AdSpotRow[]> {
     tagline: row.tagline,
     href: row.href,
     image: row.image,
+    placement: row.placement,
     createdAt: row.createdAt.toISOString(),
   }));
 }
@@ -50,6 +52,7 @@ const addInput = z.object({
   tagline: z.string().trim().min(1).max(120),
   href: z.string().trim().min(1).max(300),
   image: z.string().trim().max(300).optional(),
+  placement: z.enum(["garden", "forests", "bundle"]).default("bundle"),
 });
 
 /** Same rule everywhere a stored string becomes a link: http(s) only. */
@@ -90,7 +93,13 @@ export async function addAdSpot(
   }
 
   await prisma.adSpot.create({
-    data: { name: parsed.data.name, tagline: parsed.data.tagline, href, image },
+    data: {
+      name: parsed.data.name,
+      tagline: parsed.data.tagline,
+      href,
+      image,
+      placement: parsed.data.placement,
+    },
   });
 
   revalidatePath("/dashboard/forests");

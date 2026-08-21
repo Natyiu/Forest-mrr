@@ -93,17 +93,23 @@ export function AdPitchDialog({
     }
     setError(null);
     startTransition(async () => {
-      const result = await createAdCheckout({
-        placement: kind,
-        company: company.trim(),
-        tagline: tagline.trim(),
-        website: website.trim(),
-      });
-      if (result.ok) {
-        setRedirecting(true);
-        window.location.href = result.url;
-      } else {
-        setError(result.message);
+      // Any rejection here — a dropped connection, a thrown action — must show
+      // in the dialog, never bubble up to Next's error page.
+      try {
+        const result = await createAdCheckout({
+          placement: kind,
+          company: company.trim(),
+          tagline: tagline.trim(),
+          website: website.trim(),
+        });
+        if (result.ok) {
+          setRedirecting(true);
+          window.location.href = result.url;
+        } else {
+          setError(result.message);
+        }
+      } catch {
+        setError("Something went wrong opening checkout. Please try again.");
       }
     });
   };
