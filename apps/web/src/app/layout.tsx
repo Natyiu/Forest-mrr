@@ -1,19 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 
 import "../index.css";
 import Providers from "@/components/providers";
 import { getAppSettings } from "@/lib/actions/user";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import { dmSans, geistMono } from "@/lib/fonts";
 
 const DEFAULT_TITLE = "Forest MRR — Your revenue, growing";
 const DEFAULT_DESCRIPTION =
@@ -83,7 +73,7 @@ export default function RootLayout({
   // `font-sans` to the html element too, and a variable defined on <body>
   // cannot be read by the element above it.
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${dmSans.variable} ${geistMono.variable}`} suppressHydrationWarning>
       <head>
         {/*
           Resolve light/dark before the first paint, from **`next-themes`' own

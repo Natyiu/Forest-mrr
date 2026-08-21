@@ -1,13 +1,19 @@
-import { Manrope } from "next/font/google";
+import { DM_Sans, Geist_Mono } from "next/font/google";
 
 /**
- * The marketing face. The app itself is set in Geist (`app/layout.tsx`); the
- * landing page and the auth screens — the surfaces a person meets before they
- * are inside — take Manrope, applied on each of those roots rather than on
- * `<html>` so nothing behind the login changes family. One instance here, so
- * the two surfaces cannot load the font twice.
+ * The face of the product — DM Sans, the same family outbid.lol ships.
+ * `--font-geist-sans` is kept as the CSS variable name so index.css and
+ * `font-sans` follow without a second edit.
  */
-export const manrope = Manrope({
+export const dmSans = DM_Sans({
   subsets: ["latin"],
+  variable: "--font-geist-sans",
   display: "swap",
 });
+
+export const geistMono = Geist_Mono({
+  variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+export const manrope = dmSans;

@@ -15,6 +15,7 @@ import {
   ownsStartup,
   resolveScope,
 } from "@/lib/startups";
+import { isStartupCategory } from "@/lib/startup-categories";
 import { forgetHarvest } from "@/lib/revenue/harvest";
 import { forgetForest } from "@/lib/revenue/forest";
 
@@ -42,9 +43,41 @@ const updateInput = nameInput.extend({
   id: z.string().min(1),
   /** A key into the app's categorical tones. Decorative; means nothing. */
   tone: z.string().trim().max(24).optional(),
+  /** A `STARTUP_CATEGORIES` value, or "" to clear. Absent means "leave it". */
+  category: z
+    .string()
+    .optional()
+    .refine((value) => value === undefined || value === "" || isStartupCategory(value), {
+      message: "Unknown category.",
+    }),
+  /** The directory entry. "" clears; absent means "leave it". */
+  website: z.string().trim().max(200).optional(),
+  description: z.string().trim().max(160).optional(),
 });
 
+/**
+ * A pasted address arrives however it was copied — with a scheme, without one,
+ * with a path. Normalise to https when no scheme is given, and refuse anything
+ * that is not http(s): this string is rendered as a link on a public board, and
+ * a `javascript:` URL there is a stored XSS with a company name on it.
+ */
+function normaliseWebsite(raw: string): string | null | { error: string } {
+  if (raw === "") return null;
+  const candidate = /^[a-z][a-z0-9+.-]*:/i.test(raw) ? raw : `https://${raw}`;
+  try {
+    const url = new URL(candidate);
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      return { error: "A website link must be http(s)." };
+    }
+    return url.toString();
+  } catch {
+    return { error: "That does not look like a web address." };
+  }
+}
+
 const idInput = z.object({ id: z.string().min(1) });
+
+const publicInput = z.object({ id: z.string().min(1), isPublic: z.boolean() });
 
 const switchInput = z.object({ id: z.string().min(1) });
 
@@ -126,6 +159,15 @@ export async function updateStartup(raw: unknown): Promise<StartupResult> {
     return { ok: false, message: `You already have a startup called “${parsed.data.name}”.` };
   }
 
+  let website: string | null | undefined;
+  if (parsed.data.website !== undefined) {
+    const normalised = normaliseWebsite(parsed.data.website);
+    if (normalised !== null && typeof normalised === "object") {
+      return { ok: false, message: normalised.error };
+    }
+    website = normalised;
+  }
+
   await prisma.startup.update({
     where: { id: parsed.data.id },
     data: {
@@ -134,10 +176,49 @@ export async function updateStartup(raw: unknown): Promise<StartupResult> {
       // Absent means "leave it": the switcher edits a name inline and has no
       // opinion about the tone.
       ...(parsed.data.tone === undefined ? {} : { tone: parsed.data.tone || null }),
+      ...(parsed.data.category === undefined ? {} : { category: parsed.data.category || null }),
+      ...(website === undefined ? {} : { website }),
+      ...(parsed.data.description === undefined
+        ? {}
+        : { description: parsed.data.description || null }),
     },
   });
 
   invalidate(session.user.id);
+  const resolved = await resolveScope(session.user.id);
+  return { ok: true, startups: resolved.startups, activeId: resolved.activeId };
+}
+
+/**
+ * List or unlist a forest on the public board.
+ *
+ * Its own action rather than a field on `updateStartup`, because publishing a
+ * business's revenue is not a rename: the form that changes a name should not be
+ * able to change who can see the numbers as a side effect. Going public also
+ * refreshes the snapshot the board shows (via the owner's own keys — this *is*
+ * the owner), so the row appears with a current reading rather than a stale one.
+ */
+export async function setStartupPublic(raw: unknown): Promise<StartupResult> {
+  const session = await requireSession();
+  const parsed = publicInput.safeParse(raw);
+  if (!parsed.success) return { ok: false, message: "That change did not arrive intact." };
+
+  if (!(await ownsStartup(session.user.id, parsed.data.id))) {
+    return { ok: false, message: "That startup is not yours." };
+  }
+
+  await prisma.startup.update({
+    where: { id: parsed.data.id },
+    data: { isPublic: parsed.data.isPublic },
+  });
+
+  if (parsed.data.isPublic) {
+    const { resolveForest } = await import("@/lib/revenue/forest");
+    await resolveForest(session.user.id, { kind: "startup", id: parsed.data.id }).catch(() => {});
+  }
+
+  revalidatePath("/dashboard/forests");
+  revalidatePath("/dashboard/startups");
   const resolved = await resolveScope(session.user.id);
   return { ok: true, startups: resolved.startups, activeId: resolved.activeId };
 }

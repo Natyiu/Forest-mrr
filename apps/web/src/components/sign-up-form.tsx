@@ -219,7 +219,7 @@ export function SignUpForm() {
           {(state: { canSubmit: boolean; isSubmitting: boolean }) => (
             <Button
               type="submit"
-              className="h-12 w-full rounded-xl bg-fl-green text-[15px] font-medium text-white shadow-lg shadow-green-600/20 hover:bg-fl-green/90"
+              className="h-11 w-full rounded-full bg-fl-green text-[15px] font-medium text-white shadow-none hover:bg-fl-green/90"
               disabled={!state.canSubmit || state.isSubmitting}
             >
               {state.isSubmitting ? (

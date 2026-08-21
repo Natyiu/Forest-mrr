@@ -13,37 +13,37 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --background: oklch(0.962 0.005 285);
-  --foreground: oklch(0.17 0.012 285);
+  --background: oklch(0.985 0.004 90);
+  --foreground: oklch(0.18 0.01 80);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.17 0.012 285);
+  --card-foreground: oklch(0.18 0.01 80);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.17 0.012 285);
-  --primary: oklch(0.585 0.215 288);
+  --popover-foreground: oklch(0.18 0.01 80);
+  --primary: oklch(0.52 0.127 163);
   --primary-foreground: oklch(0.99 0 0);
-  --secondary: oklch(0.955 0.006 285);
-  --secondary-foreground: oklch(0.28 0.012 285);
-  --muted: oklch(0.955 0.006 285);
-  --muted-foreground: oklch(0.55 0.012 285);
-  --accent: oklch(0.945 0.008 285);
-  --accent-foreground: oklch(0.24 0.012 285);
+  --secondary: oklch(0.97 0.004 90);
+  --secondary-foreground: oklch(0.28 0.01 80);
+  --muted: oklch(0.97 0.004 90);
+  --muted-foreground: oklch(0.55 0.012 80);
+  --accent: oklch(0.965 0.006 90);
+  --accent-foreground: oklch(0.24 0.01 80);
   --destructive: oklch(0.645 0.205 20);
-  --border: oklch(0.925 0.005 285);
-  --input: oklch(0.94 0.005 285);
-  --ring: oklch(0.62 0.16 285);
+  --border: oklch(0.91 0.008 80);
+  --input: oklch(0.93 0.008 80);
+  --ring: oklch(0.52 0.12 163);
   --chart-1: oklch(0.2 0 0);
   --chart-2: oklch(0.72 0.14 90);
   --chart-3: oklch(0.50 0.01 250);
   --chart-4: oklch(0.35 0.01 250);
   --chart-5: oklch(0.25 0.01 250);
   --sidebar: oklch(1 0 0);
-  --sidebar-foreground: oklch(0.17 0.012 285);
-  --sidebar-primary: oklch(0.585 0.215 288);
+  --sidebar-foreground: oklch(0.18 0.01 80);
+  --sidebar-primary: oklch(0.52 0.127 163);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.955 0.006 285);
-  --sidebar-accent-foreground: oklch(0.28 0.012 285);
-  --sidebar-border: oklch(0.93 0.005 285);
-  --sidebar-ring: oklch(0.62 0.16 285);
+  --sidebar-accent: oklch(0.97 0.004 90);
+  --sidebar-accent-foreground: oklch(0.28 0.01 80);
+  --sidebar-border: oklch(0.91 0.008 80);
+  --sidebar-ring: oklch(0.52 0.12 163);
 
   /*
     One radius drives the whole scale (see `@theme inline` below). It was 0,
@@ -51,16 +51,16 @@
     corners. Changing this one number rounds all of them at once — which is
     the reason nothing downstream should hard-code a radius.
   */
-  --radius: 14px;
+  --radius: 16px;
 
   /*
     Elevation, in three steps. Soft and wide rather than tight and dark: a
     shadow this diffuse reads as a card lifted off the page, and a tight one
     reads as a drop-shadow effect applied to a rectangle.
   */
-  --elev-1: 0 1px 2px oklch(0.2 0.02 285 / 0.04), 0 4px 16px oklch(0.2 0.02 285 / 0.05);
-  --elev-2: 0 2px 4px oklch(0.2 0.02 285 / 0.05), 0 12px 32px oklch(0.2 0.02 285 / 0.08);
-  --elev-3: 0 8px 20px oklch(0.2 0.02 285 / 0.10), 0 24px 60px oklch(0.2 0.02 285 / 0.14);
+  --elev-1: 0 1px 2px oklch(0.2 0.02 80 / 0.03);
+  --elev-2: 0 1px 2px oklch(0.2 0.02 80 / 0.04), 0 8px 24px oklch(0.2 0.02 80 / 0.04);
+  --elev-3: 0 8px 24px oklch(0.2 0.02 80 / 0.08);
 
   /* The one place colour is loud: hero calls to action. */
   --grad-from: oklch(0.80 0.15 55);
@@ -90,7 +90,7 @@
     Both modes are validated, not flipped: light 0.585, dark 0.62 — the app's own
     dark violet at 0.70 sits above the band charts are legible in.
   */
-  --chart-mark: oklch(0.585 0.215 288);
+  --chart-mark: oklch(0.52 0.127 163);
 
   /*
     The diverging pair, for the one chart that shows polarity: subscriptions
@@ -211,11 +211,9 @@
 
 @theme inline {
   /*
-    Geist comes from `next/font/google` in app/layout.tsx, which serves it
-    under a hashed family name and exposes that name as --font-geist-sans /
-    --font-geist-mono on <body>. Naming the family literally ("Geist") here
-    matched nothing unless the reader happened to have it installed, so the
-    whole app quietly rendered in the system sans. Point at the variables.
+    DM Sans (and Geist Mono) come from `next/font/google` in lib/fonts.ts,
+    hashed family names exposed as --font-geist-sans / --font-geist-mono on
+    <html>. Point at the variables, not the literal family names.
   */
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
@@ -641,26 +639,26 @@
        machinery is untouched, so a future depth pass only has to change these
        six numbers. Neither mode uses it today; both are asked to be one colour,
        and a reader would notice the top-left corner not being it. */
-    --page-from: #E2F4E8;
-    --page-via: #E2F4E8;
-    --page-to: #E2F4E8;
+    --page-from: #FCFBF9;
+    --page-via: #FCFBF9;
+    --page-to: #FCFBF9;
 
     --surface: rgba(255, 255, 255, 0.92);
     --surface-solid: #FFFFFF;
-    --inset: #F3F5F3;
-    --inset-strong: #E6EAE7;
-    --hairline: rgba(15, 32, 23, 0.08);
+    --inset: #F4F3F0;
+    --inset-strong: #EBEAE6;
+    --hairline: rgba(20, 18, 14, 0.08);
 
-    --ink: #111A15;
-    --ink-soft: #4B5A52;
-    --ink-faint: #8B978F;
+    --ink: #171411;
+    --ink-soft: #5C574F;
+    --ink-faint: #9A958C;
     --ink-inverse: #FFFFFF;
 
-    --scrim: rgba(17, 26, 21, 0.20);
-    --shadow-panel: 0 1px 2px rgba(15, 32, 23, 0.04), 0 8px 28px rgba(15, 32, 23, 0.07);
-    --shadow-modal: 0 10px 40px rgba(15, 32, 23, 0.12);
-    --shadow-toast: 0 2px 10px rgba(15, 32, 23, 0.14);
-    --track: #DDE3DF;
+    --scrim: rgba(23, 20, 17, 0.20);
+    --shadow-panel: 0 1px 2px rgba(20, 18, 14, 0.04);
+    --shadow-modal: 0 8px 28px rgba(20, 18, 14, 0.08);
+    --shadow-toast: 0 2px 10px rgba(20, 18, 14, 0.10);
+    --track: #E8E6E1;
 
     --garden: #059669;
     --garden-hover: #047857;
@@ -852,7 +850,6 @@
   /* Panels in the plot are 20px; shadcn derives its whole scale from this. */
   --radius: 16px;
 
-  /* Elevation instead of outline, at the plot's weight. */
   --elev-1: var(--shadow-panel);
   --elev-2: var(--shadow-panel);
   --elev-3: var(--shadow-modal);
@@ -1139,11 +1136,9 @@
 .forest-landing {
   --fl-ground: #E8F8EE;
   --fl-cloud: #FEFEFE;
-  --fl-green: #39BD58;
-  /* The solid buttons' fill: one step down from the accent, so a green button
-     stands off the green words and the green ground. 3.1:1 under white. */
-  --fl-green-deep: #2DA64B;
-  --fl-ink: #000000;
+  --fl-green: #1F8637;
+  --fl-green-deep: #1A7330;
+  --fl-ink: #171411;
   --fl-muted: #577B64;
 }
 

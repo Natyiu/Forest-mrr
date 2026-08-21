@@ -9,7 +9,7 @@ import { manrope } from "@/lib/fonts";
 /**
  * **The auth screens are the landing page's language.** Same mint ground
  * (`.forest-landing`, so the `--fl-*` tokens resolve), same wordmark, same
- * face (Manrope), same white card with a big radius floating on it, and the
+ * face (DM Sans), same white card with a big radius floating on it, and the
  * plot standing on the right where the landing page stands it under the
  * headline — because a person arrives here from that page, and a sign-up form
  * in a different product's chrome is a door into a different building.
@@ -92,7 +92,7 @@ export default async function AuthLayout({
           reads as an object on the mint rather than a document.
         */}
         <main className="flex flex-1 items-center justify-center px-4 py-10 sm:px-6">
-          <div className="w-full max-w-[400px] rounded-[28px] bg-card px-7 py-9 shadow-elev-2 ring-1 ring-border/60 sm:px-9 sm:py-10">
+          <div className="w-full max-w-[400px] rounded-2xl border border-border bg-card px-7 py-9 sm:px-9 sm:py-10">
             {children}
           </div>
         </main>

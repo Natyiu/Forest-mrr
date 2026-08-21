@@ -50,6 +50,13 @@ export interface StartupView {
   tone: string | null;
   /** How many providers this startup has connected. */
   connections: number;
+  /** Whether this forest is listed on the public board. */
+  isPublic: boolean;
+  /** A `STARTUP_CATEGORIES` value, for the board's per-category leaderboards. */
+  category: string | null;
+  /** The directory entry: where the business lives, in the founder's words. */
+  website: string | null;
+  description: string | null;
   createdAt: string;
 }
 
@@ -62,6 +69,10 @@ export async function listStartups(userId: string): Promise<StartupView[]> {
       name: true,
       emoji: true,
       tone: true,
+      isPublic: true,
+      category: true,
+      website: true,
+      description: true,
       createdAt: true,
       _count: { select: { connections: true } },
       connections: {
@@ -80,6 +91,10 @@ export async function listStartups(userId: string): Promise<StartupView[]> {
     tone: row.tone,
     image: row.connections[0]?.accountImage ?? null,
     connections: row._count.connections,
+    isPublic: row.isPublic,
+    category: row.category,
+    website: row.website,
+    description: row.description,
     createdAt: row.createdAt.toISOString(),
   }));
 }
@@ -121,6 +136,30 @@ export async function resolveScope(userId: string): Promise<ResolvedScope> {
     active,
     activeId: active.id,
   };
+}
+
+/**
+ * The scope for looking at somebody else's forest.
+ *
+ * Anyone signed in may watch a startup its founder has stood in the open —
+ * that is what the public toggle *means* — and a founder may always watch
+ * their own, public or not. Everything else is null, which the callers turn
+ * into a 404: as far as this viewer is concerned, a private forest does not
+ * exist. The scope carries the **owner's** id, because the book is derived
+ * from the owner's connections; the viewer's identity plays no part in the
+ * read and their cookie-scope is never consulted.
+ */
+export async function spectatorScope(
+  viewerId: string,
+  startupId: string,
+): Promise<{ ownerId: string; scope: Scope } | null> {
+  const startup = await prisma.startup.findUnique({
+    where: { id: startupId },
+    select: { id: true, userId: true, isPublic: true },
+  });
+  if (!startup) return null;
+  if (!startup.isPublic && startup.userId !== viewerId) return null;
+  return { ownerId: startup.userId, scope: { kind: "startup", id: startup.id } };
 }
 
 /** The `where` clause every scoped connection read shares. */

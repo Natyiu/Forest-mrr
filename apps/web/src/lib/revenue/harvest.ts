@@ -156,6 +156,8 @@ export interface ProviderSummary {
 export interface ProviderHarvest {
   provider: RevenueProviderId;
   providerName: string;
+  /** The business this connection belongs to, so per-startup readings can be derived. */
+  startupId: string;
   accountLabel: string | null;
   reference: string | null;
   publicUrl: string | null;
@@ -1139,6 +1141,7 @@ async function planFor(
 
 interface ConnectionRow {
   provider: string;
+  startupId: string;
   secret: string;
   accountLabel: string | null;
   reference: string | null;
@@ -1153,6 +1156,7 @@ async function harvestConnection(row: ConnectionRow): Promise<ProviderHarvest | 
   const blank: ProviderHarvest = {
     provider,
     providerName,
+    startupId: row.startupId,
     accountLabel: row.accountLabel,
     reference: row.reference,
     publicUrl: row.publicUrl,
@@ -1348,7 +1352,7 @@ export async function harvestRevenue(
   const rows = await prisma.revenueConnection.findMany({
     where: connectionsWhere(userId, options.scope),
     orderBy: { createdAt: "asc" },
-    select: { provider: true, secret: true, accountLabel: true, reference: true, publicUrl: true },
+    select: { provider: true, startupId: true, secret: true, accountLabel: true, reference: true, publicUrl: true },
   });
 
   const harvested = (

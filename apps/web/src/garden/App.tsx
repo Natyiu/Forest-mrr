@@ -138,6 +138,7 @@ function EmptyPlot({
   startupSlot,
   brandSlot,
   navSlot,
+  transparent = false,
 }: {
   book: { kind: 'loading' | 'live' | 'empty'; providers?: string[]; note?: string };
   onConnectRevenue?: () => void;
@@ -145,12 +146,18 @@ function EmptyPlot({
   startupSlot?: React.ReactNode;
   brandSlot?: React.ReactNode;
   navSlot?: React.ReactNode;
+  /** Paint nothing behind the scene — for frames that sit on a host surface. */
+  transparent?: boolean;
 }) {
   const connected = (book.providers?.length ?? 0) > 0;
   const loading = book.kind === 'loading';
 
   return (
-    <div className="garden-root relative flex h-full w-full flex-col overflow-hidden bg-page text-ink font-sans">
+    <div
+      className={`garden-root relative flex h-full w-full flex-col overflow-hidden text-ink font-sans ${
+        transparent ? 'bg-transparent' : 'bg-page'
+      }`}
+    >
       {/*
         **Nothing but the animation while the book is being read.**
 
@@ -289,6 +296,8 @@ export default function App({
   onConnectRevenue,
   onCleanView,
   clean = false,
+  spectate = false,
+  bookQuery,
 }: {
   accountSlot?: React.ReactNode;
   /** The startup switcher — the host app's, like the account menu. */
@@ -314,6 +323,18 @@ export default function App({
    */
   clean?: boolean;
   /**
+   * The clean view for a *watcher* — somebody else's public forest in a frame
+   * on an ordinary page. Same bare canvas as `clean`, with two differences:
+   * the metric border stays a working menu (hover explains a specimen, a click
+   * re-beds the plot as that metric — all client-side re-derivation of the
+   * same book, so a spectator can read every planting without being able to
+   * change anything real), and the painted atmosphere is off so the plot
+   * stands on the page's own colour rather than inside a second background.
+   * The wall display keeps its no-op border on purpose: a passer-by must not
+   * leave a shared screen re-bedded.
+   */
+  spectate?: boolean;
+  /**
    * Open the clean view. A callback rather than a route, for the reason
    * `onConnectRevenue` is one: this file is a self-contained port that knows
    * nothing about the host app's routing. Without it the button, the ⌘K row and
@@ -322,6 +343,14 @@ export default function App({
    * than no key.
    */
   onCleanView?: () => void;
+  /**
+   * Extra query string for the two book fetches — `startup=<id>` is how the
+   * host app points this plot at somebody's *public* forest instead of the
+   * session's own. A string rather than a route or an id, for the reason every
+   * other host concern is a prop: this file knows nothing about the app around
+   * it, including what the server accepts.
+   */
+  bookQuery?: string;
 } = {}) {
   const { season: activeSeason, setAutoSeason, setMode, resolvedMode } = useTheme();
 
@@ -555,9 +584,10 @@ export default function App({
   useEffect(() => {
     let cancelled = false;
 
+    const suffix = bookQuery ? `?${bookQuery}` : '';
     Promise.all([
-      fetch('/api/garden').then((res) => res.json()),
-      fetch('/api/garden/history').then((res) => res.json()),
+      fetch(`/api/garden${suffix}`).then((res) => res.json()),
+      fetch(`/api/garden/history${suffix}`).then((res) => res.json()),
     ])
       .then(([state, history]) => {
         if (cancelled) return;
@@ -609,7 +639,7 @@ export default function App({
     return () => {
       cancelled = true;
     };
-  }, [initialUrl.month, reloadKey]);
+  }, [initialUrl.month, reloadKey, bookQuery]);
 
   /**
    * The wall display re-reads the book on its own, because nobody is going to
@@ -1135,6 +1165,7 @@ export default function App({
         startupSlot={startupSlot}
         brandSlot={brandSlot}
         navSlot={navSlot}
+        transparent={spectate}
       />
     );
   }
@@ -1150,9 +1181,17 @@ export default function App({
     over the trees. `onSelectPlant` is not wired at all rather than being wired
     to nothing, so the canvas does not draw a hover state a nobody can act on.
   */
-  if (clean) {
+  if (clean || spectate) {
     return (
-      <div className="garden-root relative h-full w-full overflow-hidden bg-page text-ink font-sans select-none">
+      // The wall display owns its whole screen, so it paints the page colour;
+      // a spectator frame sits inside somebody else's surface — a white card
+      // on the board — and paints nothing, so the forest stands on whatever
+      // the host put it on.
+      <div
+        className={`garden-root relative h-full w-full overflow-hidden text-ink font-sans select-none ${
+          spectate ? "bg-transparent" : "bg-page"
+        }`}
+      >
         <main className="absolute inset-0">
           <IsometricGardenCanvas
             gardenState={activeGarden}
@@ -1165,6 +1204,10 @@ export default function App({
             planting={planting}
             metricCards={metricCards}
             selectedMetric={plantedMetric}
+            // A watcher may re-bed the plot — it is the same book, re-derived
+            // in their own browser. The wall display may not; see `spectate`.
+            onSelectMetric={spectate ? setPlantedMetric : undefined}
+            plainBackground={spectate}
             shape={plantShape}
             still={isHeld}
             currentTimeMs={Date.now()}

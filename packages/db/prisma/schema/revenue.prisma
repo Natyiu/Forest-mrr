@@ -19,6 +19,43 @@ model Startup {
   /// A key into the app's categorical tones — decorative, means nothing.
   tone String?
 
+  /// Opt-in: list this forest on the public board with its headline numbers.
+  /// Off by default — a business's revenue is nobody's else's until its owner
+  /// says so, which is why this is a per-startup switch and not an account one.
+  isPublic Boolean @default(false)
+
+  /// A `STARTUP_CATEGORIES` value (`lib/startup-categories.ts`), for the
+  /// board's per-category leaderboards. A string rather than an enum for the
+  /// same reason `provider` is: the list is data, and a tenth category must
+  /// not be a migration.
+  category String?
+
+  /// The directory entry: where this business lives and what it is, in the
+  /// founder's own words. Shown wherever the startup is listed in the open,
+  /// so a forest on the board is a company somebody can actually find.
+  website     String?
+  description String?
+
+  /// The reading the public board shows, written as a side effect of the
+  /// owner's own garden deriving their forest — so the board never opens
+  /// anyone's sealed keys and a visitor's page load costs zero provider calls.
+  /// Null until the owner has loaded their garden once.
+  publicMrrMinor   Int?
+  publicCurrency   String?
+  publicTrees      Int?
+  publicSnapshotAt DateTime?
+
+  /// The same book read at thirty days ago, from the subscriptions' own start
+  /// and cancel dates — not a stored history, so it exists from the first
+  /// snapshot. `publicMrrMinor − publicMrrMinor30d` is the month's growth.
+  publicMrrMinor30d Int?
+
+  /// The stand itself: each active subscription's monthly amount in minor
+  /// units, descending, capped at 60 — so the board can *draw* the forest with
+  /// every tree at its real relative size, the plot's own rule. Amounts only;
+  /// no customer, plan or provider ever crosses into this column.
+  publicCanopy Json?
+
   connections RevenueConnection[]
 
   createdAt DateTime @default(now())
@@ -26,6 +63,7 @@ model Startup {
 
   @@unique([userId, name])
   @@index([userId])
+  @@index([isPublic])
   @@map("startup")
 }
 

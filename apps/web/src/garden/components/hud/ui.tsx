@@ -46,7 +46,7 @@ export const Surface: React.FC<{
 }> = ({ className, children, solid }) => (
   <div
     className={cx(
-      'rounded-[20px] shadow-panel ring-1 ring-hairline',
+      'rounded-[16px] shadow-panel ring-1 ring-hairline',
       solid ? 'bg-surface-solid' : 'bg-surface backdrop-blur-xl',
       className
     )}

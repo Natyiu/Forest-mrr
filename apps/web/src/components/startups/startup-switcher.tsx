@@ -54,7 +54,6 @@ export function StartupSwitcher({
   const [isPending, startTransition] = useTransition();
   const [creating, setCreating] = useState(false);
   const [name, setName] = useState("");
-  const [emoji, setEmoji] = useState("");
 
   const active = startups.find((startup) => startup.id === activeId) ?? null;
   const isAll = activeId === "all";
@@ -80,14 +79,13 @@ export function StartupSwitcher({
     if (!trimmed) return;
 
     startTransition(async () => {
-      const result = await createStartup({ name: trimmed, emoji: emoji.trim() || undefined });
+      const result = await createStartup({ name: trimmed });
       if (!result.ok) {
         toast.error(result.message);
         return;
       }
       setCreating(false);
       setName("");
-      setEmoji("");
       toast.success(`${trimmed} created`, {
         description: "Connect a provider to plant it.",
       });
@@ -183,18 +181,6 @@ export function StartupSwitcher({
           </DialogHeader>
 
           <div className="flex items-end gap-2">
-            <div className="w-16">
-              <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-                Emoji
-              </label>
-              <Input
-                value={emoji}
-                onChange={(event) => setEmoji(event.target.value)}
-                placeholder="🌱"
-                maxLength={4}
-                className="h-9 text-center text-sm"
-              />
-            </div>
             <div className="flex-1">
               <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
                 Name

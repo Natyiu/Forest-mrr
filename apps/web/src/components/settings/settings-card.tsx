@@ -40,7 +40,7 @@ export function SettingsCard({
   return (
     <section
       className={cn(
-        "overflow-hidden rounded-[20px] border bg-card shadow-elev-1",
+        "overflow-hidden rounded-2xl border border-border bg-card",
         tone === "danger" ? "border-destructive/30" : "border-border",
         className,
       )}

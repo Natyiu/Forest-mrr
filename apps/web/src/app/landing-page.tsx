@@ -40,18 +40,15 @@ import {
  *   meets this product through. `--garden` is on `:root` and mode-aware, so
  *   these sections are lit correctly in both without a `dark:` in sight.
  *
- * **It is set in Manrope throughout, tight.** The rest of the app is Geist;
- * this page and the auth screens take Manrope (`lib/fonts.ts`), applied on
- * their own roots so nothing behind the login changes family. A poster wants one
- * voice, so it is one family here too — what makes the type read as *designed*
- * rather than as default is not a second family but negative tracking
+ * **It is set in DM Sans throughout, tight.** The rest of the app is the same
+ * family (`lib/fonts.ts`); this page and the auth screens apply it on their
+ * own roots as well. A poster wants one voice — what makes the type read as
+ * *designed* rather than as default is not a second family but negative tracking
  * (-0.045em on the headline, -0.035em on the section heads) and leading near
  * 1, so each heading locks into a single block instead of drifting apart line
  * by line.
  *
- * The four feature cards take the decorative `--pop-*` family, which is
- * documented as categorical and meaningless — four unrelated things wanting four
- * unrelated colours is exactly what that set exists for.
+ * Feature cards are plain white panels with a hairline — one surface, no wash.
  */
 
 const PROVIDERS = [
@@ -68,29 +65,21 @@ const CARDS = [
     eyebrow: "The plot",
     title: "One tree, one subscription",
     body: "Every active subscription stands on the ground at the size it actually pays, bedded by the plan it is on.",
-    wash: "from-pop-green/22 via-pop-green/8 to-transparent",
-    dot: "bg-pop-green",
   },
   {
     eyebrow: "The border",
     title: "Eight metrics, growing",
     body: "Retention, churn, quick ratio, ARPA. Pick a specimen and the whole plot re-beds itself as that metric.",
-    wash: "from-pop-teal/22 via-pop-teal/8 to-transparent",
-    dot: "bg-pop-teal",
   },
   {
     eyebrow: "The timeline",
     title: "Scrub a year in a second",
     body: "One book of business, sampled at every month. Drag the scrubber and watch the forest arrive.",
-    wash: "from-pop-yellow/26 via-pop-yellow/10 to-transparent",
-    dot: "bg-pop-yellow",
   },
   {
     eyebrow: "Startups",
     title: "More than one thing",
     body: "Each business keeps its own keys, its own forest, its own graphs — or put them all on one plot.",
-    wash: "from-pop-violet/22 via-pop-violet/8 to-transparent",
-    dot: "bg-pop-violet",
   },
 ];
 
@@ -212,7 +201,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
     <div
       // `zoom` is desktop density only. On a phone it made 16px body copy
       // render at 12.8px, and layout below `lg` is designed at real size.
-      className={`${manrope.className} min-h-screen bg-background text-foreground lg:[zoom:0.8]`}
+      className={`${manrope.className} min-h-screen bg-background text-foreground`}
     >
       {/*
         ══════════════════════════════════════════════════════════════════════
@@ -271,8 +260,8 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
           and the buttons all step down together — where a transform would
           leave a scaled picture sitting in an unscaled box.
         */}
-        <div className="relative z-10 lg:[zoom:0.9]">
-          <header className="z-10 mx-auto flex w-full max-w-[125vw] flex-row items-center justify-between gap-3 px-6 pt-8 sm:gap-4 sm:px-5 sm:pt-5 lg:px-6 lg:pt-6">
+        <div className="relative z-10">
+          <header className="z-10 mx-auto flex w-full max-w-6xl flex-row items-center justify-between gap-3 px-5 pt-5 sm:px-6 sm:pt-6">
             <Link href="/" aria-label="Forest MRR" className="flex items-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -280,61 +269,57 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
                 alt="Forest MRR"
                 width={159}
                 height={75}
-                className="h-[37px] w-auto sm:h-[70px] lg:h-[92px]"
+                className="h-9 w-auto sm:h-11"
               />
             </Link>
 
-            {/*
-              The one thing on this band that is not in the design.
-
-              Light/dark is meant to be reachable from the top right of every page
-              in this app, and `FloatingThemeToggle` stands down on `/` because a
-              fixed corner button would land on top of the pill. It changes nothing
-              on the poster itself — `.forest-landing` is painted and does not
-              follow the theme — but everything below the fold does, and a page
-              with no way to reach the switch is the gap this exists to close.
-            */}
-            <div className="flex items-center gap-3">
-              {/* <span className="[&_button:hover]:bg-fl-green/10 [&_button]:text-fl-muted [&_button:hover]:text-fl-ink">
+            <div className="flex items-center gap-1 sm:gap-2">
+              <a
+                href="#how"
+                className="hidden rounded-full px-3 py-2 text-[13px] font-medium text-fl-muted transition-colors hover:text-fl-ink sm:inline"
+              >
+                How it works
+              </a>
+              <Link
+                href="/signin"
+                className="rounded-full px-3 py-2 text-[13px] font-medium text-fl-muted transition-colors hover:text-fl-ink"
+              >
+                Sign in
+              </Link>
+              <span className="[&_button:hover]:bg-fl-green/10 [&_button]:text-fl-muted [&_button:hover]:text-fl-ink">
                 <ThemeToggle />
-              </span> */}
+              </span>
               <Link href="/signup">
-                <Button className="h-[33px] rounded-[11px] border-[1.5px] border-white bg-fl-green px-[15px] text-[10.5px] font-medium text-white shadow-none hover:bg-fl-green/90 sm:h-14 sm:rounded-2xl sm:border-4 sm:bg-green-600 sm:px-7 sm:text-[17px] sm:shadow-lg sm:shadow-green-600/20 sm:hover:bg-green-600/90 lg:h-[84px] lg:px-11 lg:text-[25px]">
-                  Forest your mrr
+                <Button className="h-9 rounded-full border-0 bg-fl-green px-4 text-[13px] font-medium text-white shadow-none hover:bg-fl-green/90">
+                  Get started
                 </Button>
               </Link>
             </div>
           </header>
 
-          <div className="relative z-10 mx-auto max-w-[1560px] px-4 pt-[92px] text-center sm:px-10 sm:pt-10 lg:pt-[110px]">
-            {/*
-              On a phone the headline is `10.45vw` — 45px at the design's 430,
-              which is the size that puts "Your Stripe revenue" on one line with
-              the design's 25px either side — so it stays one line on a 360px
-              phone rather than breaking "revenue" onto its own.
-            */}
-            <h1 className="mx-auto max-w-[1000px] text-[clamp(30px,10.45vw,45px)] font-bold leading-[0.98] tracking-[-0.055em] sm:text-[62px] lg:text-[90px]">
+          <div className="relative z-10 mx-auto max-w-3xl px-5 pt-16 text-center sm:px-6 sm:pt-20 lg:pt-24">
+            <h1 className="text-[36px] font-bold leading-[1.05] tracking-[-0.04em] text-fl-ink sm:text-[52px] lg:text-[64px]">
               Your Stripe revenue
               <br />
               as <LeafTile />{" "}
               <span className="text-fl-green">a living forest</span>
             </h1>
 
-            <p className="mx-auto mt-3.5 max-w-[345px] text-[11px] leading-[1.45] text-fl-muted sm:mt-6 sm:max-w-[800px] sm:text-[19px] lg:mt-8 lg:text-[26px]">
+            <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-fl-muted sm:mt-5 sm:text-[17px]">
               Watch subscribers grow into trees, spot churn the moment leaves turn
               orange, and see every payment fall as rain.
             </p>
 
-            <div className="mt-4 flex flex-row flex-wrap items-center justify-center gap-[14px] sm:mt-8 sm:gap-3 lg:mt-11 lg:gap-4">
+            <div className="mt-7 flex flex-row flex-wrap items-center justify-center gap-2.5 sm:mt-8">
               <Link href="/signup">
-                <Button className="h-[39px] w-[112px] rounded-[12.6px] border-[1.6px] border-white bg-fl-green px-0 text-[11px] font-medium text-white shadow-none hover:bg-fl-green/90 sm:h-14 sm:w-auto sm:rounded-2xl sm:border-4 sm:bg-green-600 sm:px-7 sm:text-[17px] sm:shadow-lg sm:shadow-green-600/20 sm:hover:bg-green-600/90 lg:h-[84px] lg:px-11 lg:text-[25px]">
-                  Forest your mrr
+                <Button className="h-11 rounded-full border-0 bg-fl-green px-6 text-[14px] font-medium text-white shadow-none hover:bg-fl-green/90">
+                  Forest your MRR
                 </Button>
               </Link>
               <a href="#how">
                 <Button
                   variant="outline"
-                  className="h-[39px] w-[112px] rounded-[12.6px] border-[1.6px] border-fl-green bg-white px-0 text-[11px] font-medium text-fl-green shadow-none hover:bg-white sm:h-14 sm:w-auto sm:rounded-2xl sm:border-[3px] sm:px-7 sm:text-[17px] sm:shadow-lg sm:shadow-green-600/20 lg:h-[84px] lg:px-11 lg:text-[25px]"
+                  className="h-11 rounded-full border-border bg-white px-6 text-[14px] font-medium text-fl-ink shadow-none hover:bg-white"
                 >
                   See how it works
                 </Button>
@@ -406,15 +391,15 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
         band reads as a continuation of it. The token is scoped to
         `.forest-landing`, hence the class here rather than a raw hex.
       */}
-      <section id="how" className="forest-landing scroll-mt-20 bg-fl-ground py-16 text-center sm:py-24">
+      <section id="how" className="scroll-mt-20 bg-background py-16 text-center sm:py-24">
         <div className="mx-auto max-w-6xl px-5">
-        <p className="text-[12px] font-semibold uppercase tracking-[0.16em] text-garden">
+        <p className="text-[13px] font-medium text-garden">
           The plot
         </p>
-        <h2 className="mx-auto mt-4 max-w-2xl text-[30px] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[42px]">
+        <h2 className="mx-auto mt-3 max-w-2xl text-[28px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[36px]">
           A dashboard you read at a glance
         </h2>
-        <p className="mx-auto mt-5 max-w-xl text-[16px] font-medium leading-relaxed text-muted-foreground">
+        <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
           A table of subscriptions tells you what happened after you have read it.
           A forest tells you before. Size is money, colour is health, and an empty
           patch is a month that did not go well.
@@ -440,22 +425,17 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
           {CARDS.map((card) => (
             <article
               key={card.eyebrow}
-              className="rounded-[26px] bg-card p-1.5 shadow-elev-2 ring-1 ring-border/70"
+              className="rounded-2xl border border-border bg-card p-6"
             >
-              <div
-                className={`flex h-full flex-col rounded-[20px] bg-linear-to-br p-8 ${card.wash}`}
-              >
-                <span className={`mb-6 h-3 w-3 rounded-full ${card.dot}`} />
-                <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-foreground/45">
-                  {card.eyebrow}
-                </p>
-                <h3 className="mt-2.5 text-[21px] font-semibold leading-[1.2] tracking-[-0.025em]">
-                  {card.title}
-                </h3>
-                <p className="mt-3.5 text-[14.5px] leading-relaxed text-muted-foreground">
-                  {card.body}
-                </p>
-              </div>
+              <p className="text-[12px] font-medium text-muted-foreground">
+                {card.eyebrow}
+              </p>
+              <h3 className="mt-2 text-[18px] font-semibold leading-[1.25] tracking-[-0.02em]">
+                {card.title}
+              </h3>
+              <p className="mt-2.5 text-[14px] leading-relaxed text-muted-foreground">
+                {card.body}
+              </p>
             </article>
           ))}
         </div>
@@ -466,19 +446,19 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
       <section className="border-t border-border bg-card/40 py-16 sm:py-24">
         <div className="mx-auto grid max-w-6xl gap-10 px-5 sm:gap-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:gap-20">
           <div>
-            <p className="text-[13px] font-semibold uppercase tracking-[0.16em] text-garden">
+            <p className="text-[13px] font-medium text-garden">
               Why trust it
             </p>
-            <h2 className="mt-4 text-[34px] font-bold leading-[1.08] tracking-[-0.035em] sm:text-[44px]">
+            <h2 className="mt-3 text-[28px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[36px]">
               It only ever draws what your provider said
             </h2>
-            <p className="mt-5 max-w-lg text-[17px] font-medium leading-relaxed text-muted-foreground">
+            <p className="mt-4 max-w-lg text-[15px] leading-relaxed text-muted-foreground">
               A pretty chart of numbers nobody can source is worse than no chart.
               Everything here is one read away from the place your money actually
               arrives.
             </p>
             <Link href="/signup" className="mt-8 inline-block">
-              <Button className="h-12 rounded-xl bg-garden px-7 text-[15px] font-medium text-garden-ink hover:bg-garden-hover">
+              <Button className="h-11 rounded-full bg-garden px-6 text-[14px] font-medium text-garden-ink hover:bg-garden-hover">
                 Connect a key
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Button>
@@ -512,17 +492,17 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
         page closes on the ground it opened on. Text is set in the poster's ink,
         because the mint is painted and does not follow the theme.
       */}
-      <section className="forest-landing bg-fl-ground py-20 text-center text-fl-ink sm:py-28">
+      <section className="bg-background py-20 text-center sm:py-28">
         <div className="mx-auto max-w-6xl px-5">
-          <h2 className="mx-auto max-w-3xl text-[36px] font-bold leading-[1.06] tracking-[-0.04em] sm:text-[52px]">
+          <h2 className="mx-auto max-w-3xl text-[28px] font-bold leading-[1.12] tracking-[-0.03em] sm:text-[40px]">
             Go and look at your business
           </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[17px] font-medium leading-relaxed text-fl-muted">
+          <p className="mx-auto mt-4 max-w-xl text-[15px] leading-relaxed text-muted-foreground">
             Paste one read-only key. The forest is planted by the time you look up.
           </p>
-          <div className="mt-9 flex flex-wrap items-center justify-center">
+          <div className="mt-8 flex flex-wrap items-center justify-center">
             <Link href="/signup">
-              <Button className="h-12 rounded-xl bg-fl-green px-7 text-[15px] font-medium text-white hover:bg-fl-green/90">
+              <Button className="h-11 rounded-full bg-fl-green px-6 text-[14px] font-medium text-white hover:bg-fl-green/90">
                 Start free
               </Button>
             </Link>

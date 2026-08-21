@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { sessionOrDenied } from "@/garden/server/guard";
 import { liveForest } from "@/lib/revenue/forest";
-import { resolveScope } from "@/lib/startups";
+import { resolveScope, spectatorScope } from "@/lib/startups";
 
 /**
  * Every monthly close, from the same book `/api/garden` served.
@@ -14,13 +14,28 @@ import { resolveScope } from "@/lib/startups";
  *
  * With nothing connected there is no history, and no sample history to stand in
  * for it: the months come back empty and the plot draws its empty state.
+ *
+ * **`?startup=<id>` follows the same spectator rule as `/api/garden`** — the two
+ * are one book, so they must be gated identically or a viewer could take half of
+ * a forest they are not allowed the other half of.
  */
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const gate = await sessionOrDenied();
   if (gate.denied) return gate.denied;
+
+  const spectate = request.nextUrl.searchParams.get("startup");
+  if (spectate) {
+    const grant = await spectatorScope(gate.userId, spectate);
+    if (!grant) return NextResponse.json({ error: "Not found" }, { status: 404 });
+    const forest = await liveForest(grant.ownerId, grant.scope);
+    return NextResponse.json({
+      snapshots: forest?.snapshots ?? [],
+      source: forest ? "live" : "empty",
+    });
+  }
 
   const { scope } = await resolveScope(gate.userId);
   const forest = await liveForest(gate.userId, scope);

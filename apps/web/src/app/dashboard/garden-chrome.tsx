@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, Settings, Sprout } from "lucide-react";
+import { Building2, Settings, Sprout, Trees } from "lucide-react";
 
 import { Surface, cx } from "@/garden/components/hud/ui";
 
@@ -58,21 +58,21 @@ export function GardenBrand() {
       className="block transition-opacity hover:opacity-80"
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/forest-mrr.svg"
-        alt="Forest MRR"
-        width={93}
-        height={44}
-        className="h-11 w-[93px] dark:hidden"
-      />
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
-        src="/forest-mrr-dark.svg"
-        alt="Forest MRR"
-        width={93}
-        height={44}
-        className="hidden h-11 w-[93px] dark:block"
-      />
+        <img
+          src="/forest-mrr.svg"
+          alt="Forest MRR"
+          width={93}
+          height={44}
+          className="h-9 w-[76px] dark:hidden"
+        />
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/forest-mrr-dark.svg"
+          alt="Forest MRR"
+          width={93}
+          height={44}
+          className="hidden h-9 w-[76px] dark:block"
+        />
     </Link>
   );
 }
@@ -91,6 +91,7 @@ export function GardenBrand() {
  */
 const TABS = [
   { href: "/dashboard", label: "Garden", icon: Sprout, exact: true },
+  { href: "/dashboard/forests", label: "Forests", icon: Trees, exact: false },
   { href: "/dashboard/startups", label: "Startups", icon: Building2, exact: false },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
@@ -99,7 +100,7 @@ export function GardenNav() {
   const pathname = usePathname();
 
   return (
-    <Surface className="flex items-center gap-1 px-2.5 py-2">
+    <Surface className="flex items-center gap-0.5 px-1.5 py-1.5">
       {TABS.map((tab) => {
         const isActive = tab.exact ? pathname === tab.href : pathname.startsWith(tab.href);
 
@@ -111,11 +112,12 @@ export function GardenNav() {
             aria-label={tab.label}
             aria-current={isActive ? "page" : undefined}
             className={cx(
-              "grid h-11 w-11 place-items-center rounded-full transition-colors",
+              "flex h-9 items-center gap-1.5 rounded-full px-2.5 text-[13px] font-medium transition-colors sm:px-3.5",
               isActive ? "bg-garden text-garden-ink" : "text-ink-soft hover:bg-inset hover:text-ink",
             )}
           >
-            <tab.icon className="h-[19px] w-[19px]" />
+            <tab.icon className="h-4 w-4" />
+            <span className="hidden sm:inline">{tab.label}</span>
           </Link>
         );
       })}

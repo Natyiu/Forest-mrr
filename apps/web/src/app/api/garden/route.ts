@@ -1,8 +1,8 @@
-import { NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 import { sessionOrDenied } from "@/garden/server/guard";
 import { resolveForest } from "@/lib/revenue/forest";
-import { resolveScope } from "@/lib/startups";
+import { resolveScope, spectatorScope } from "@/lib/startups";
 
 /**
  * The signed-in user's garden — their own subscriptions, or nothing.
@@ -15,13 +15,51 @@ import { resolveScope } from "@/lib/startups";
  *
  * The plan catalogue rides with the book, because on a real book those plan names
  * are the user's own.
+ *
+ * **`?startup=<id>` serves somebody else's public forest.** The Forests board
+ * links to a full view of any startup its founder has stood in the open; the gate
+ * is `spectatorScope` — public, or the viewer's own — and everything else 404s
+ * rather than admitting the startup exists. The book is derived from the owner's
+ * connections through the same caches their own plot uses, so a spectator costs
+ * no extra provider calls and never opens a sealed key of their own.
  */
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   const gate = await sessionOrDenied();
   if (gate.denied) return gate.denied;
+
+  const spectate = request.nextUrl.searchParams.get("startup");
+  if (spectate) {
+    const grant = await spectatorScope(gate.userId, spectate);
+    if (!grant) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
+    const resolved = await resolveForest(grant.ownerId, grant.scope);
+    if (resolved.forest) {
+      return NextResponse.json({
+        gardenState: resolved.forest.garden,
+        weatherState: resolved.forest.weather,
+        planCatalogue: resolved.forest.planCatalogue,
+        source: "live",
+        live: resolved.forest.source,
+        startup: null,
+        scope: spectate,
+      });
+    }
+    return NextResponse.json({
+      gardenState: null,
+      source: "empty",
+      connected: resolved.connected,
+      providers: resolved.providers,
+      startup: null,
+      scope: spectate,
+      note:
+        resolved.connected === 0
+          ? null
+          : `${resolved.providers.join(" · ")} connected, with no subscriptions yet.`,
+    });
+  }
 
   // Which business this browser is looking at. A cookie, validated against the
   // user's own startups on every request.

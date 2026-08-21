@@ -85,13 +85,13 @@ export function DashboardShell({
   */
   return (
     <div className="garden-root garden-skin min-h-screen bg-page text-ink">
-      <header className="relative z-30 flex items-start justify-between gap-4 px-5 pt-5">
+      <header className="relative z-30 flex items-center justify-between gap-4 px-6 py-4">
         <GardenBrand />
-        <div className="absolute left-1/2 top-5 -translate-x-1/2">
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
           <GardenNav />
         </div>
 
-        <Surface className="flex items-center gap-0.5 p-1.5">
+        <Surface className="flex items-center gap-0.5 p-1">
           <GardenAccount
             name={userName}
             email={userEmail}
@@ -102,7 +102,7 @@ export function DashboardShell({
         </Surface>
       </header>
 
-      <main className="mx-auto max-w-5xl px-5 pb-16 pt-8">{children}</main>
+      <main className="mx-auto max-w-5xl px-6 pb-20 pt-6">{children}</main>
     </div>
   );
 }

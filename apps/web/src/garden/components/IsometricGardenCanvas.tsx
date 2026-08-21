@@ -92,6 +92,13 @@ interface IsometricGardenCanvasProps {
   /** Clicking a specimen replants the beds as that metric. */
   onSelectMetric?: (id: MetricId) => void;
   /**
+   * Skip the painted light — the seasonal sky, the drifting air, the sun wash
+   * and the vignette — so the plot stands directly on the page's own colour.
+   * For frames embedded in an ordinary page, where the canvas's atmosphere
+   * would read as a second background inside a box.
+   */
+  plainBackground?: boolean;
+  /**
    * How the plot is drawn. `tree` is the garden; `cube` is the same book as
    * columns on a shared baseline, for when the question is "which of these two
    * is bigger" rather than "what shape is this business".
@@ -579,6 +586,7 @@ export const IsometricGardenCanvas: React.FC<IsometricGardenCanvasProps> = ({
   metricCards,
   selectedMetric,
   onSelectMetric,
+  plainBackground = false,
   shape = 'tree',
   still = false,
   currentTimeMs,
@@ -683,9 +691,14 @@ export const IsometricGardenCanvas: React.FC<IsometricGardenCanvasProps> = ({
 
     const updateSize = () => {
       const rect = container.getBoundingClientRect();
+      // The floor only guards the degenerate first measure. It must stay well
+      // below any real container: a floor above the container's height leaves
+      // the backing store taller than the element, and CSS squashes the whole
+      // scene by the ratio — which is how the spectator frame got a vertically
+      // compressed plot with a mis-scaled background band.
       setCanvasDimensions({
-        width: Math.max(800, Math.floor(rect.width)),
-        height: Math.max(500, Math.floor(rect.height)),
+        width: Math.max(240, Math.floor(rect.width)),
+        height: Math.max(180, Math.floor(rect.height)),
       });
     };
 
@@ -982,7 +995,8 @@ export const IsometricGardenCanvas: React.FC<IsometricGardenCanvasProps> = ({
       // opaque, in place of the page, with the plot drawn into it. Seasonal sky
       // has nothing to say underwater.
       if (shape === 'aquarium') drawOcean(ctx, WATER[mode], width, height, seconds);
-      else drawAmbient(ctx, palette.ambient, ambientRef.current, width, height, seconds, 'sky');
+      else if (!plainBackground)
+        drawAmbient(ctx, palette.ambient, ambientRef.current, width, height, seconds, 'sky');
 
       const finalScale = baseFitScale * camera.zoom;
       const centerX = width / 2 - midX * finalScale + camera.x;
@@ -1313,12 +1327,12 @@ export const IsometricGardenCanvas: React.FC<IsometricGardenCanvasProps> = ({
 
       // --- 8. Seasonal air, in front of the plot ---
       // Petals and snow are *air*, and there is none in the tank.
-      if (!reducedMotion && shape !== 'aquarium') {
+      if (!reducedMotion && shape !== 'aquarium' && !plainBackground) {
         drawAmbient(ctx, palette.ambient, ambientRef.current, width, height, seconds, 'air');
       }
 
       // --- 9. The light itself ---
-      if (palette.sunWash) {
+      if (palette.sunWash && !plainBackground) {
         const wash = ctx.createRadialGradient(
           width * 0.18, height * 0.05, 0,
           width * 0.18, height * 0.05, Math.max(width, height) * 0.9
@@ -1329,7 +1343,7 @@ export const IsometricGardenCanvas: React.FC<IsometricGardenCanvasProps> = ({
         ctx.fillRect(0, 0, width, height);
       }
 
-      if (palette.vignette) {
+      if (palette.vignette && !plainBackground) {
         const edge = ctx.createRadialGradient(
           width / 2, height / 2, Math.min(width, height) * 0.32,
           width / 2, height / 2, Math.max(width, height) * 0.78

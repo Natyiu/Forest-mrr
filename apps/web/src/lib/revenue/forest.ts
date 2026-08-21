@@ -4,7 +4,7 @@ import prisma from "@Batman/db";
 
 import { type Scope, connectionsWhere, scopeKey } from "@/lib/startups";
 
-import { harvestRevenue } from "./harvest";
+import { type RevenueHarvest, harvestRevenue } from "./harvest";
 import { type ForestBook, harvestToForest } from "./to-garden";
 
 /**
@@ -28,8 +28,87 @@ const CACHE_TTL_MS = 60_000;
 
 const store = globalThis as unknown as {
   __liveForest?: Map<string, { at: number; fetchedAt: string; value: ForestBook | null }>;
+  /** Which harvest (`fetchedAt`) each scope last wrote startup snapshots from. */
+  __forestSnapshotted?: Map<string, string>;
 };
 store.__liveForest ??= new Map();
+store.__forestSnapshotted ??= new Map();
+
+/**
+ * Write each startup's headline reading onto its row, as a side effect of the
+ * owner deriving their own forest. This is what the public Forests board reads:
+ * the board never opens anyone's sealed keys, so a startup's public numbers are
+ * exactly as fresh as the last time its *owner* looked at their garden. Written
+ * for every startup in the harvest, public or not, so flipping one public shows
+ * its last reading immediately rather than a dash until the next visit. Fire
+ * and forget — a failed snapshot write must never take the garden down.
+ */
+function snapshotStartups(harvest: RevenueHarvest): void {
+  const perStartup = new Map<
+    string,
+    {
+      mrrMinor: number;
+      mrr30dMinor: number;
+      trees: number;
+      byCurrency: Map<string, number>;
+      canopy: number[];
+    }
+  >();
+
+  // Thirty days ago, read from the subscriptions' own dates — the same trick
+  // the plot's timeline uses, so "growth this month" exists from the very
+  // first snapshot instead of waiting a month for stored history. A
+  // subscription counted then if it had started by then and either still runs
+  // or was cancelled after; statuses that pay nothing now (trialing, past-due,
+  // paused) count on neither side, so the delta compares like with like.
+  const t30 = Date.parse(harvest.fetchedAt) - 30 * 86_400_000;
+
+  for (const provider of harvest.providers) {
+    const entry =
+      perStartup.get(provider.startupId) ??
+      { mrrMinor: 0, mrr30dMinor: 0, trees: 0, byCurrency: new Map<string, number>(), canopy: [] };
+    entry.mrrMinor += provider.summary.mrrMinor;
+    entry.trees += provider.summary.activeCount;
+    for (const [currency, minor] of Object.entries(provider.summary.currencyMix)) {
+      entry.byCurrency.set(currency, (entry.byCurrency.get(currency) ?? 0) + minor);
+    }
+    for (const subscription of provider.subscriptions) {
+      if (subscription.status === "active") entry.canopy.push(subscription.monthlyMinor);
+      if (!subscription.createdAt) continue;
+      const started = Date.parse(subscription.createdAt);
+      if (Number.isNaN(started) || started > t30) continue;
+      if (subscription.status === "active") {
+        entry.mrr30dMinor += subscription.monthlyMinor;
+      } else if (subscription.status === "canceled") {
+        const ended = subscription.endsAt ? Date.parse(subscription.endsAt) : started;
+        if (ended > t30) entry.mrr30dMinor += subscription.monthlyMinor;
+      }
+    }
+    perStartup.set(provider.startupId, entry);
+  }
+
+  const at = new Date(harvest.fetchedAt);
+  void Promise.all(
+    [...perStartup].map(([startupId, reading]) => {
+      // The plot's known limit, kept honestly: mixed currencies are summed into
+      // one figure, quoted in whichever currency carries the most of it.
+      const currency =
+        [...reading.byCurrency.entries()].sort((a, b) => b[1] - a[1])[0]?.[0] ?? "USD";
+      return prisma.startup.update({
+        where: { id: startupId },
+        data: {
+          publicMrrMinor: reading.mrrMinor,
+          publicMrrMinor30d: reading.mrr30dMinor,
+          publicCurrency: currency,
+          publicTrees: reading.trees,
+          // Largest first so the cap keeps the trees that carry the revenue.
+          publicCanopy: reading.canopy.sort((a, b) => b - a).slice(0, 60),
+          publicSnapshotAt: at,
+        },
+      });
+    }),
+  ).catch(() => {});
+}
 
 /** Per user *and* scope: one startup's book must never be served for another's. */
 const cacheKey = (userId: string, scope: Scope) => `${userId}|${scopeKey(scope)}`;
@@ -68,6 +147,13 @@ export async function resolveForest(userId: string, scope: Scope): Promise<Fores
   }
 
   const harvest = await harvestRevenue(userId, { scope });
+
+  const snapKey = cacheKey(userId, scope);
+  if (store.__forestSnapshotted!.get(snapKey) !== harvest.fetchedAt) {
+    store.__forestSnapshotted!.set(snapKey, harvest.fetchedAt);
+    snapshotStartups(harvest);
+  }
+
   const providers = harvest.providers.map((provider) => provider.providerName);
   const subscriptions = harvest.providers.reduce(
     (sum, provider) => sum + provider.subscriptions.length,

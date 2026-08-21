@@ -213,20 +213,20 @@ const CHROME_NEUTRAL: Record<ResolvedMode, Omit<ChromeTokens,
   light: {
     surface: 'rgba(255, 255, 255, 0.92)',
     surfaceSolid: '#FFFFFF',
-    inset: '#F3F5F3',
-    insetStrong: '#E6EAE7',
-    hairline: 'rgba(15, 32, 23, 0.08)',
+    inset: '#F4F3F0',
+    insetStrong: '#EBEAE6',
+    hairline: 'rgba(20, 18, 14, 0.08)',
 
-    ink: '#111A15',
-    inkSoft: '#4B5A52',
-    inkFaint: '#8B978F',
+    ink: '#171411',
+    inkSoft: '#5C574F',
+    inkFaint: '#9A958C',
     inkInverse: '#FFFFFF',
 
-    scrim: 'rgba(17, 26, 21, 0.20)',
-    shadowPanel: '0 1px 2px rgba(15, 32, 23, 0.04), 0 8px 28px rgba(15, 32, 23, 0.07)',
-    shadowModal: '0 10px 40px rgba(15, 32, 23, 0.12)',
-    shadowToast: '0 2px 10px rgba(15, 32, 23, 0.14)',
-    track: '#DDE3DF',
+    scrim: 'rgba(23, 20, 17, 0.20)',
+    shadowPanel: '0 1px 2px rgba(20, 18, 14, 0.04)',
+    shadowModal: '0 8px 28px rgba(20, 18, 14, 0.08)',
+    shadowToast: '0 2px 10px rgba(20, 18, 14, 0.10)',
+    track: '#E8E6E1',
 
     warn: '#F59E0B',
     warnInk: '#A85D08',
@@ -319,7 +319,7 @@ type AccentSet = Pick<ChromeTokens,
 const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   spring: {
     light: {
-      pageFrom: '#E2F4E8', pageVia: '#E2F4E8', pageTo: '#E2F4E8',
+      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
       accent: '#3E9E5B', accentHover: '#34884D', accentInk: '#FFFFFF',
       accentSoft: '#1F6B39', accentWash: '#EDF7EE', accentLine: 'rgba(62, 158, 91, 0.28)',
     },
@@ -331,7 +331,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   summer: {
     light: {
-      pageFrom: '#E2F4E8', pageVia: '#E2F4E8', pageTo: '#E2F4E8',
+      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
       accent: '#059669', accentHover: '#047857', accentInk: '#FFFFFF',
       accentSoft: '#047857', accentWash: '#ECFDF5', accentLine: 'rgba(5, 150, 105, 0.28)',
     },
@@ -343,7 +343,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   autumn: {
     light: {
-      pageFrom: '#E2F4E8', pageVia: '#E2F4E8', pageTo: '#E2F4E8',
+      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
       accent: '#C2661F', accentHover: '#A9561A', accentInk: '#FFFFFF',
       accentSoft: '#9A4E17', accentWash: '#FBF1E4', accentLine: 'rgba(194, 102, 31, 0.28)',
     },
@@ -355,7 +355,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   winter: {
     light: {
-      pageFrom: '#E2F4E8', pageVia: '#E2F4E8', pageTo: '#E2F4E8',
+      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
       accent: '#2C7DAF', accentHover: '#246A97', accentInk: '#FFFFFF',
       accentSoft: '#215F87', accentWash: '#EDF5FA', accentLine: 'rgba(44, 125, 175, 0.28)',
     },

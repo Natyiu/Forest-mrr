@@ -28,7 +28,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TILE_TONES, type IconTileTone } from "@/components/ui/icon-tile";
 import { ConnectRevenueDialog } from "@/components/revenue/connect-revenue-dialog";
 import { ProviderMark } from "@/components/revenue/provider-mark";
 import {
@@ -36,31 +35,14 @@ import {
   removeRevenueConnection,
   verifyRevenueConnection,
 } from "@/lib/actions/revenue";
-import { deleteStartup, switchStartup, updateStartup } from "@/lib/actions/startups";
+import { deleteStartup, setStartupPublic, switchStartup, updateStartup } from "@/lib/actions/startups";
+import { Switch } from "@/components/ui/switch";
 import { REVENUE_PROVIDERS, type RevenueProviderId } from "@/lib/revenue/providers";
 import { pageEnabled } from "@/lib/nav-features";
 import { StartupMark } from "@/components/startups/startup-mark";
+import { STARTUP_CATEGORIES } from "@/lib/startup-categories";
 import type { StartupView } from "@/lib/startups";
 import { cn } from "@/lib/utils";
-
-/**
- * The tone swatches, written out.
- *
- * Tailwind generates utilities by scanning source text, so `bg-pop-${tone}` produces
- * no CSS at all and the swatches would render transparent. Every class a component
- * can use has to appear literally somewhere — this is that somewhere.
- */
-const TONE_SWATCH: Record<IconTileTone, string> = {
-  violet: "bg-pop-violet",
-  blue: "bg-pop-blue",
-  teal: "bg-pop-teal",
-  green: "bg-pop-green",
-  lime: "bg-pop-lime",
-  yellow: "bg-pop-yellow",
-  orange: "bg-pop-orange",
-  coral: "bg-pop-coral",
-  pink: "bg-pop-pink",
-};
 
 /**
  * **One startup, everything about it.**
@@ -92,8 +74,11 @@ export function StartupSettings({
   const [busy, setBusy] = useState<string | null>(null);
 
   const [name, setName] = useState(startup.name);
-  const [emoji, setEmoji] = useState(startup.emoji ?? "");
-  const [tone, setTone] = useState<string>(startup.tone ?? "");
+  const [category, setCategory] = useState<string>(startup.category ?? "");
+  const [website, setWebsite] = useState(startup.website ?? "");
+  const [description, setDescription] = useState(startup.description ?? "");
+  const [isPublic, setIsPublic] = useState(startup.isPublic);
+  const [publicPending, startPublicTransition] = useTransition();
 
   const [dialog, setDialog] = useState<{ provider?: RevenueProviderId } | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<RevenueConnectionView | null>(null);
@@ -101,8 +86,9 @@ export function StartupSettings({
 
   const dirty =
     name.trim() !== startup.name ||
-    (emoji.trim() || null) !== startup.emoji ||
-    (tone || null) !== startup.tone;
+    (category || null) !== startup.category ||
+    (website.trim() || null) !== startup.website ||
+    (description.trim() || null) !== startup.description;
 
   function save() {
     const trimmed = name.trim();
@@ -114,8 +100,9 @@ export function StartupSettings({
       const result = await updateStartup({
         id: startup.id,
         name: trimmed,
-        emoji: emoji.trim() || undefined,
-        tone: tone || "",
+        category: category || "",
+        website: website.trim(),
+        description: description.trim(),
       });
       if (!result.ok) {
         toast.error(result.message);
@@ -238,23 +225,18 @@ export function StartupSettings({
       <section className="rounded-xl border border-border bg-card p-4 shadow-elev-1">
         <h3 className="text-xs font-semibold">Name and mark</h3>
         <p className="mt-0.5 text-[11px] text-muted-foreground">
-          How you will recognise this business in the switcher. The mark is decorative —
-          it encodes nothing.
+          The mark arrives from your payment provider — connect one that publishes a
+          logo and it appears here and everywhere this business is listed.
         </p>
 
-        <div className="mt-3 flex flex-wrap items-end gap-2">
-          <div className="w-16">
-            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-              Emoji
-            </label>
-            <Input
-              value={emoji}
-              onChange={(event) => setEmoji(event.target.value)}
-              placeholder="🌱"
-              maxLength={4}
-              className="h-9 text-center text-sm"
-            />
-          </div>
+        <div className="mt-3 flex flex-wrap items-end gap-3">
+          <StartupMark
+            image={startup.image}
+            emoji={startup.emoji}
+            name={startup.name}
+            className="size-11 shrink-0 rounded-2xl"
+            emojiClassName="text-xl"
+          />
 
           <div className="min-w-[12rem] flex-1">
             <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
@@ -270,37 +252,71 @@ export function StartupSettings({
           </div>
         </div>
 
+        <div className="mt-3 flex flex-wrap gap-3">
+          <div className="min-w-[14rem] flex-1">
+            <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+              Website
+            </label>
+            <Input
+              value={website}
+              onChange={(event) => setWebsite(event.target.value)}
+              placeholder="yourstartup.com"
+              maxLength={200}
+              className="h-9 text-xs"
+            />
+          </div>
+        </div>
+
         <div className="mt-3">
           <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-            Colour
+            What it is
           </label>
+          <Input
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+            placeholder="One sentence on what this business does."
+            maxLength={160}
+            className="h-9 text-xs"
+          />
+          <p className="mt-1 text-[10px] text-muted-foreground">
+            Shown with the website wherever this forest is listed in the open.
+          </p>
+        </div>
+
+        <div className="mt-3">
+          <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Category
+          </label>
+          <p className="mb-1.5 text-[11px] text-muted-foreground">
+            Which shelf this forest stands on when the public board ranks by category.
+          </p>
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
-              onClick={() => setTone("")}
-              aria-pressed={tone === ""}
+              onClick={() => setCategory("")}
+              aria-pressed={category === ""}
               className={cn(
                 "rounded-4xl border px-2 py-1 text-[10px] font-medium transition-colors",
-                tone === "" ? "border-primary/50 text-foreground" : "border-border text-muted-foreground",
+                category === "" ? "border-primary/50 text-foreground" : "border-border text-muted-foreground",
               )}
             >
               None
             </button>
-            {TILE_TONES.map((candidate: IconTileTone) => (
+            {STARTUP_CATEGORIES.map((candidate) => (
               <button
-                key={candidate}
+                key={candidate.value}
                 type="button"
-                onClick={() => setTone(candidate)}
-                aria-label={candidate}
-                aria-pressed={tone === candidate}
+                onClick={() => setCategory(candidate.value)}
+                aria-pressed={category === candidate.value}
                 className={cn(
-                  "size-6 rounded-[8px] transition-transform",
-                  TONE_SWATCH[candidate],
-                  tone === candidate
-                    ? "ring-2 ring-foreground/60 ring-offset-1"
-                    : "opacity-80 hover:opacity-100",
+                  "rounded-4xl border px-2 py-1 text-[10px] font-medium transition-colors",
+                  category === candidate.value
+                    ? "border-primary/50 bg-primary/10 text-foreground"
+                    : "border-border text-muted-foreground hover:text-foreground",
                 )}
-              />
+              >
+                {candidate.label}
+              </button>
             ))}
           </div>
         </div>
@@ -408,6 +424,43 @@ export function StartupSettings({
             })}
           </ul>
         )}
+      </section>
+
+      {/* --- the public board -------------------------------------------- */}
+      <section className="rounded-xl border border-border bg-card p-4 shadow-elev-1">
+        <div className="flex items-start justify-between gap-4">
+          <div>
+            <h3 className="text-xs font-semibold">Public forest</h3>
+            <p className="mt-0.5 max-w-prose text-[11px] text-muted-foreground">
+              List {startup.name} on the Forests board, where anyone signed in can see
+              its name, its mark, its MRR and how many trees stand on its plot — and
+              compare their own against it. Nothing else is shown: no customers, no
+              plans, no providers. Off, and this forest is yours alone.
+            </p>
+          </div>
+          <Switch
+            checked={isPublic}
+            disabled={publicPending}
+            aria-label="List this forest on the public board"
+            onCheckedChange={(next) => {
+              setIsPublic(next);
+              startPublicTransition(async () => {
+                const result = await setStartupPublic({ id: startup.id, isPublic: next });
+                if (!result.ok) {
+                  setIsPublic(!next);
+                  toast.error(result.message);
+                } else {
+                  toast.success(
+                    next
+                      ? `${startup.name} is on the public board.`
+                      : `${startup.name} is private again.`,
+                  );
+                  router.refresh();
+                }
+              });
+            }}
+          />
+        </div>
       </section>
 
       {/* --- the destructive one, last and alone --------------------------- */}

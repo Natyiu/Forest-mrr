@@ -40,13 +40,13 @@ export default function SettingsLayout({
     */
     <div className="mx-auto max-w-3xl">
       <div className="mb-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+        <p className="text-[13px] font-medium text-ink-faint">
           Settings
         </p>
-        <h1 className="mt-1.5 text-[34px] font-extrabold leading-none tracking-[-0.03em] text-ink">
+        <h1 className="mt-1 text-[28px] font-bold leading-none tracking-[-0.03em] text-ink">
           Your account
         </h1>
-        <p className="mt-2.5 text-[13.5px] text-ink-soft">
+        <p className="mt-2 text-[14px] text-ink-soft">
           Profile, sign-in and how the app looks. Startups have their own tab, up top.
         </p>
       </div>
