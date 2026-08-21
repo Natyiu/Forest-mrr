@@ -279,14 +279,47 @@ function HorizontalBar({
 export default function AdminAnalyticsPage() {
   const [data, setData] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     getAnalytics()
       .then(setData)
+      .catch((e: unknown) =>
+        setError(e instanceof Error ? e.message : "Something went wrong")
+      )
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  if (loading || !data) return <AnalyticsSkeleton />;
+  useEffect(load, []);
+
+  if (loading) return <AnalyticsSkeleton />;
+
+  if (error || !data)
+    return (
+      <div className="space-y-8">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Analytics</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            The metrics that matter — last 30 days.
+          </p>
+        </div>
+        <div className="border border-border bg-card rounded-xl px-6 py-10 text-center">
+          <p className="text-sm font-medium">Couldn&apos;t load analytics</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {error ?? "The server didn't return any data."}
+          </p>
+          <button
+            type="button"
+            onClick={load}
+            className="mt-4 inline-flex items-center gap-2 px-3 h-9 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Try again
+          </button>
+        </div>
+      </div>
+    );
 
   const {
     overview,

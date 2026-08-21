@@ -189,14 +189,48 @@ function timeAgo(date: Date): string {
 export default function AdminOverviewPage() {
   const [data, setData] = useState<Overview | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const load = () => {
+    setLoading(true);
+    setError(null);
     getOverview()
       .then(setData)
+      .catch((e: unknown) =>
+        setError(e instanceof Error ? e.message : "Something went wrong")
+      )
       .finally(() => setLoading(false));
-  }, []);
+  };
 
-  if (loading || !data) return <OverviewSkeleton />;
+  useEffect(load, []);
+
+  if (loading) return <OverviewSkeleton />;
+
+  if (error || !data)
+    return (
+      <div className="space-y-5">
+        <div>
+          <h1 className="text-xl font-semibold tracking-tight">Overview</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            A snapshot of your product, right now.
+          </p>
+        </div>
+        <div className="border border-border bg-card rounded-xl px-6 py-10 text-center">
+          <p className="text-sm font-medium">Couldn&apos;t load the overview</p>
+          <p className="text-xs text-muted-foreground mt-1">
+            {error ?? "The server didn't return any data."}
+          </p>
+          <button
+            type="button"
+            onClick={load}
+            className="mt-4 inline-flex items-center gap-2 px-3 h-9 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground transition-colors"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            Try again
+          </button>
+        </div>
+      </div>
+    );
 
   const { stats, sparkline, recentUsers, recentNotifications, recentFeedback, countries } = data;
   const signupSpark = sparkline.map((s) => s.signups);
@@ -213,12 +247,7 @@ export default function AdminOverviewPage() {
         </div>
         <button
           type="button"
-          onClick={() => {
-            setLoading(true);
-            getOverview()
-              .then(setData)
-              .finally(() => setLoading(false));
-          }}
+          onClick={load}
           className="hidden sm:flex items-center gap-2 px-3 h-9 rounded-lg border border-border bg-card text-xs text-muted-foreground hover:text-foreground transition-colors shrink-0"
         >
           <RefreshCw className="h-3.5 w-3.5" />
