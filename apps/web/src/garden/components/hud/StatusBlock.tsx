@@ -1,7 +1,6 @@
 import React from 'react';
-import { History, Sprout, Sun, TrendingDown, TrendingUp, X } from 'lucide-react';
+import { History, Sprout, TrendingDown, TrendingUp, X } from 'lucide-react';
 import { type WeatherState } from '../../types';
-import { SEASON_LABELS } from '../../lib/theme';
 import { signedPercent } from '../../lib/format';
 import { type StreamStatus } from '../../lib/useEventStream';
 import { Sparkline } from '../charts/Sparkline';
@@ -63,13 +62,15 @@ interface StatusBlockProps {
     emptyNote: string | null;
     onReset: () => void;
   } | null;
-}
-
-/** How busy the garden is, in three words. Only a drought is worth a colour. */
-function weatherLine(weather: WeatherState) {
-  if (weather.drought) return { text: 'Drought', urgent: true };
-  if (weather.rainIntensity > 0) return { text: `${weather.rainIntensity} payments/hr`, urgent: false };
-  return { text: 'Quiet', urgent: false };
+  /**
+   * Lay the reading out as one wide band instead of a tall corner card — the
+   * arrangement the plot uses now that it sits under the number rather than
+   * beside it. Same facts, same chips, same door to the revenue panel; only
+   * the geometry changes.
+   */
+  horizontal?: boolean;
+  /** A slot at the band's far end — the startup switcher, in practice. */
+  trailing?: React.ReactNode;
 }
 
 const STREAM_TITLES: Record<StreamStatus, string> = {
@@ -122,27 +123,105 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({
   previousLabel,
   onOpenRevenue,
   planted,
+  horizontal = false,
+  trailing,
 }) => {
-  const busy = weatherLine(weather);
   const rising = momGrowth !== null && momGrowth >= 0;
   const DeltaIcon = rising ? TrendingUp : TrendingDown;
 
-  /**
-   * The season, and what the business is doing in it, in two lines.
-   *
-   * The weather used to be a middot in the meta row, which is where a reader who
-   * wanted the shape of the month found a word like "Quiet" competing with two
-   * counts. It reads better as one small card: the season is the setting, the verb
-   * is the reading, and both are derived — nothing here is written by hand.
-   */
-  const mood =
-    momGrowth === null
-      ? { verb: 'Settling', line: 'The first month on record — nothing to compare against yet.' }
-      : momGrowth > 0.02
-        ? { verb: 'Growing', line: 'Your revenue is growing steadily.' }
-        : momGrowth < -0.02
-          ? { verb: 'Shrinking', line: 'Revenue is below last month.' }
-          : { verb: 'Holding', line: 'Revenue is flat on last month.' };
+  if (horizontal) {
+    return (
+      <Surface className="pointer-events-auto w-full select-none px-6 py-4">
+        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
+          <div className="min-w-0">
+            <div className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.14em] text-ink-faint">
+              {planted ? planted.label : 'Monthly revenue'}
+              <span
+                title={STREAM_TITLES[streamStatus]}
+                className={cx('h-1.5 w-1.5 rounded-full', STREAM_DOTS[streamStatus])}
+              />
+            </div>
+            <button
+              type="button"
+              onClick={onOpenRevenue}
+              title="Open the revenue panel"
+              className="mt-1 flex items-end gap-3 rounded-2xl text-left transition-opacity hover:opacity-80 cursor-pointer"
+            >
+              <span className="text-[46px] font-extrabold leading-[1] tracking-[-0.035em] text-ink">
+                {planted ? planted.value : `$${mrr.toLocaleString()}`}
+              </span>
+              {!planted && (
+                <span className="flex items-center gap-3 pb-1.5">
+                  {momGrowth !== null && (
+                    <span
+                      className={cx(
+                        'flex items-center gap-1 rounded-full px-2 py-1 text-[12px] font-bold tabular-nums',
+                        rising ? 'bg-garden-wash text-garden-soft' : 'bg-danger-wash text-danger-ink'
+                      )}
+                    >
+                      <DeltaIcon className="h-3.5 w-3.5" />
+                      {signedPercent(momGrowth)}
+                    </span>
+                  )}
+                  {trend.length > 1 && (
+                    <Sparkline values={trend} label={`Revenue over the last ${trend.length} months`} />
+                  )}
+                </span>
+              )}
+            </button>
+          </div>
+
+          {/* Everything standing behind the number, at the band's quiet end. */}
+          <div className="ml-auto flex items-center gap-x-5 gap-y-2 text-right">
+            <div className="flex flex-col items-end gap-1">
+              <div className="flex items-center gap-x-1.5 text-[12.5px] font-medium text-ink-faint">
+                <span className="font-semibold text-ink-soft tabular-nums">
+                  {activeCount.toLocaleString()} active
+                </span>
+                {atRiskCount > 0 && (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span className="font-semibold text-warn-ink tabular-nums">{atRiskCount} at risk</span>
+                  </>
+                )}
+                {!planted && previousLabel && (
+                  <>
+                    <span aria-hidden>·</span>
+                    <span>vs. {previousLabel}</span>
+                  </>
+                )}
+              </div>
+              {planted && (
+                <p className="max-w-[38ch] text-[12px] leading-snug text-ink-soft">
+                  {planted.emptyNote ?? planted.caption}
+                </p>
+              )}
+              {(historyLabel || filterSummary || planted) && (
+                <div className="flex flex-wrap items-center justify-end gap-1.5">
+                  {planted && (
+                    <Chip icon={Sprout} onClick={planted.onReset} title="Plant the garden as revenue again">
+                      Back to revenue
+                    </Chip>
+                  )}
+                  {historyLabel && (
+                    <Chip icon={History} onClick={onReturnToToday} title="Back to today">
+                      {historyLabel}
+                    </Chip>
+                  )}
+                  {filterSummary && (
+                    <Chip onClick={onClearFilters} title="Clear all filters">
+                      {filterSummary}
+                    </Chip>
+                  )}
+                </div>
+              )}
+            </div>
+            {trailing}
+          </div>
+        </div>
+      </Surface>
+    );
+  }
 
   return (
     /*
@@ -220,25 +299,6 @@ export const StatusBlock: React.FC<StatusBlockProps> = ({
         )}
       </div>
 
-      {/* The season and the reading, as one card. */}
-      {!planted && (
-        <div className="mt-3 flex items-start gap-2.5 rounded-2xl bg-garden-wash px-3 py-2.5">
-          <span className="mt-px grid h-6 w-6 shrink-0 place-items-center rounded-full bg-surface-solid text-garden-soft">
-            <Sun className="h-3.5 w-3.5" />
-          </span>
-          <span>
-            <span className="block text-[12.5px] font-bold text-ink">
-              {SEASON_LABELS[weather.season]} · {mood.verb}
-            </span>
-            <span className="block text-[11.5px] leading-snug text-ink-soft">{mood.line}</span>
-            {busy.urgent && (
-              <span className="mt-0.5 block text-[11px] font-semibold text-warn-ink">
-                {busy.text} — no payments have landed for six hours.
-              </span>
-            )}
-          </span>
-        </div>
-      )}
 
       {/* How to read the planting on the plot, when it is not the obvious one. */}
       {planted && (

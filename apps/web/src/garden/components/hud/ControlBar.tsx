@@ -1,5 +1,5 @@
 import React from 'react';
-import { Building2, ChevronLeft, ChevronRight, Fish, Play, TreePine, Video } from 'lucide-react';
+import { Building2, ChevronLeft, ChevronRight, Fish, TreePine } from 'lucide-react';
 import { ENABLED_SHAPES, type PlantShape } from '../IsometricGardenCanvas';
 import { Divider, Surface, cx } from './ui';
 
@@ -17,8 +17,6 @@ interface ControlBarProps {
   index: number;
   total: number;
   onScrub: (index: number) => void;
-  onPlay: () => void;
-  isPlaying: boolean;
   shape?: PlantShape;
   onShapeChange?: (shape: PlantShape) => void;
 }
@@ -37,8 +35,6 @@ export const ControlBar: React.FC<ControlBarProps> = ({
   index,
   total,
   onScrub,
-  onPlay,
-  isPlaying,
   shape,
   onShapeChange,
 }) => (
@@ -115,21 +111,6 @@ export const ControlBar: React.FC<ControlBarProps> = ({
           aria-label="Month"
           className="mx-2 h-1 w-[180px] cursor-pointer appearance-none rounded-full bg-track accent-garden outline-none"
         />
-
-        <Divider />
-
-        <button
-          type="button"
-          onClick={onPlay}
-          title="Sweep the whole history once"
-          className={cx(
-            'flex h-8 items-center gap-1.5 rounded-full px-3 text-[12.5px] font-bold transition-colors cursor-pointer',
-            isPlaying ? 'bg-garden-wash text-garden-soft' : 'text-ink-soft hover:bg-inset hover:text-ink'
-          )}
-        >
-          {isPlaying ? <Video className="h-[14px] w-[14px]" /> : <Play className="h-[14px] w-[14px]" />}
-          {isPlaying ? 'Playing' : 'Auto play'}
-        </button>
       </div>
     </Surface>
   </div>

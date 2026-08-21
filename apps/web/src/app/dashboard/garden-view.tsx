@@ -11,6 +11,8 @@ import { listRevenueConnections, type RevenueConnectionView } from "@/lib/action
 
 import { GardenAccount, type GardenAccountProps } from "./garden-account";
 import { GardenStartup } from "./garden-startup";
+import { AdStrip } from "@/components/ads/ad-rails";
+import type { AdSpot } from "@/lib/ads";
 import { GardenBrand, GardenNav } from "./garden-chrome";
 
 /**
@@ -46,9 +48,11 @@ const GardenApp = dynamic(() => import("@/garden/App"), {
  * fake webhook.
  */
 export function GardenView({
+  adSpots,
   account,
   startup,
 }: {
+  adSpots: AdSpot[];
   account: GardenAccountProps;
   /** Which business the plot is drawing, resolved on the server. */
   startup: {
@@ -90,6 +94,7 @@ export function GardenView({
       onModeChange={setTheme}
     >
       <GardenApp
+        adsSlot={<AdStrip spots={adSpots} />}
         brandSlot={<GardenBrand />}
         navSlot={<GardenNav />}
         accountSlot={<GardenAccount {...account} />}

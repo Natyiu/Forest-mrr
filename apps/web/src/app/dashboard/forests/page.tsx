@@ -8,6 +8,8 @@ import {
   type BoardGrower,
   ForestBoard,
 } from "@/components/forests/forest-board";
+import { AdRails } from "@/components/ads/ad-rails";
+import { getAdSpots } from "@/lib/ads.server";
 import { requireSession } from "@/lib/session";
 import {
   STARTUP_CATEGORIES,
@@ -65,7 +67,7 @@ export default async function ForestsPage({
   const selected =
     params.category && isStartupCategory(params.category) ? params.category : null;
 
-  const [rows, mine] = await Promise.all([
+  const [rows, mine, adSpots] = await Promise.all([
     prisma.startup.findMany({
       where: { isPublic: true },
       select: {
@@ -90,6 +92,7 @@ export default async function ForestsPage({
       },
     }),
     prisma.startup.count({ where: { userId: session.user.id, isPublic: true } }),
+    getAdSpots(),
   ]);
 
   // Only shelves somebody is standing on get a pill — a filter that always
@@ -163,6 +166,13 @@ export default async function ForestsPage({
 
   return (
     <div className="mx-auto max-w-4xl">
+      {/*
+        The sponsor rails live here and only here: this board is the page
+        people come back to, so it is the one worth a sponsor's money — and a
+        settings page wearing ads is a product that looks rented. Fixed at the
+        viewport edges, so the board itself stays centred and untouched.
+      */}
+      <AdRails spots={adSpots} />
       <div className="mb-5">
         <p className="text-[13px] font-medium text-ink-faint">
           The open valley

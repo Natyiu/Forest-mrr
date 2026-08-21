@@ -54,3 +54,19 @@ model AppSettings {
 
   @@map("app_settings")
 }
+
+/// A purchased sponsor placement, shown in the ad rails and the garden strip.
+///
+/// The inventory used to be a hand-edited array in `lib/ads.ts`; it is data,
+/// and selling or removing a company must not be a deploy. Rows fill the ten
+/// slots oldest-first — the same order the array filled them.
+model AdSpot {
+  id        String   @id @default(cuid())
+  name      String
+  tagline   String
+  href      String
+  image     String?
+  createdAt DateTime @default(now())
+
+  @@map("ad_spot")
+}

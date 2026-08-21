@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 
 import { ALL_STARTUPS, resolveScope } from "@/lib/startups";
 
+import { getAdSpots } from "@/lib/ads.server";
 import { GardenView } from "./garden-view";
 
 /**
@@ -39,8 +40,12 @@ export default async function DashboardPage() {
     ? await resolveScope(session.user.id)
     : { active: null, activeId: null };
 
+  const adSpots = await getAdSpots();
+
   return (
-    <GardenView
+    <>
+      <GardenView
+      adSpots={adSpots}
       startup={{
         name: active?.name ?? null,
         emoji: active?.emoji ?? null,
@@ -55,5 +60,6 @@ export default async function DashboardPage() {
         unreadNotifications,
       }}
     />
+    </>
   );
 }

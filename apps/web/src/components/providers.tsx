@@ -1,6 +1,6 @@
 "use client";
 
-import { MadeByBadge } from "./made-by";
+// import { MadeByBadge } from "./made-by";
 import { PostHogAuth } from "./posthog-auth";
 import { ThemeProvider } from "./theme-provider";
 import { ThemeSync } from "./theme-sync";
@@ -16,8 +16,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       {/* The corner switch for pages with no chrome of their own; it stands down
           inside /dashboard and /admin, which carry it in their own top bar. */}
       <FloatingThemeToggle />
-      {/* The designer credit, on every page — see made-by.tsx. */}
-      <MadeByBadge />
+      {/* The designer credit, commented out for now — see made-by.tsx. */}
+      {/* <MadeByBadge /> */}
       <Toaster />
     </ThemeProvider>
   );

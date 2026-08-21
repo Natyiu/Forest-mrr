@@ -17,6 +17,7 @@ import {
   Globe,
   Rocket,
   Shield,
+  Megaphone,
 } from "lucide-react";
 
 const adminNav = [
@@ -26,6 +27,7 @@ const adminNav = [
   { name: "Blog", href: "/admin/blog", icon: FileText },
   { name: "Notifications", href: "/admin/notifications", icon: Bell },
   { name: "Products", href: "/admin/products", icon: CreditCard },
+  { name: "Ads", href: "/admin/ads", icon: Megaphone },
   { name: "Feedback", href: "/admin/feedback", icon: MessageSquare },
   { name: "General", href: "/admin/general", icon: Settings2 },
   { name: "Site Settings", href: "/admin/site-settings", icon: Globe },

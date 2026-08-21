@@ -217,3 +217,13 @@ export function useTheme(): ThemeContextValue {
   if (!value) throw new Error('useTheme must be used inside <ThemeProvider>');
   return value;
 }
+
+/**
+ * The same context, for components that render both inside the plot and out.
+ * On the plot it returns the live provider, so a season change applies to the
+ * canvas mid-breath; on an ordinary page there is no provider and it returns
+ * null, and the caller falls back to writing the stored preference directly.
+ */
+export function useOptionalTheme(): ThemeContextValue | null {
+  return React.useContext(ThemeContext);
+}

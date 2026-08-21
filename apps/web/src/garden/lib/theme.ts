@@ -319,7 +319,7 @@ type AccentSet = Pick<ChromeTokens,
 const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   spring: {
     light: {
-      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
+      pageFrom: '#F6F5F2', pageVia: '#F6F5F2', pageTo: '#F6F5F2',
       accent: '#3E9E5B', accentHover: '#34884D', accentInk: '#FFFFFF',
       accentSoft: '#1F6B39', accentWash: '#EDF7EE', accentLine: 'rgba(62, 158, 91, 0.28)',
     },
@@ -331,7 +331,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   summer: {
     light: {
-      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
+      pageFrom: '#F6F5F2', pageVia: '#F6F5F2', pageTo: '#F6F5F2',
       accent: '#059669', accentHover: '#047857', accentInk: '#FFFFFF',
       accentSoft: '#047857', accentWash: '#ECFDF5', accentLine: 'rgba(5, 150, 105, 0.28)',
     },
@@ -343,7 +343,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   autumn: {
     light: {
-      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
+      pageFrom: '#F6F5F2', pageVia: '#F6F5F2', pageTo: '#F6F5F2',
       accent: '#C2661F', accentHover: '#A9561A', accentInk: '#FFFFFF',
       accentSoft: '#9A4E17', accentWash: '#FBF1E4', accentLine: 'rgba(194, 102, 31, 0.28)',
     },
@@ -355,7 +355,7 @@ const CHROME_SEASON: Record<Season, Record<ResolvedMode, AccentSet>> = {
   },
   winter: {
     light: {
-      pageFrom: '#FCFBF9', pageVia: '#FCFBF9', pageTo: '#FCFBF9',
+      pageFrom: '#F6F5F2', pageVia: '#F6F5F2', pageTo: '#F6F5F2',
       accent: '#2C7DAF', accentHover: '#246A97', accentInk: '#FFFFFF',
       accentSoft: '#215F87', accentWash: '#EDF5FA', accentLine: 'rgba(44, 125, 175, 0.28)',
     },

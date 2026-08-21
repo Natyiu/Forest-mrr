@@ -13,7 +13,7 @@
    ────────────────────────────────────────────────────────────────────────── */
 
 :root {
-  --background: oklch(0.985 0.004 90);
+  --background: #F6F5F2;
   --foreground: oklch(0.18 0.01 80);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.18 0.01 80);
@@ -58,7 +58,7 @@
     shadow this diffuse reads as a card lifted off the page, and a tight one
     reads as a drop-shadow effect applied to a rectangle.
   */
-  --elev-1: 0 1px 2px oklch(0.2 0.02 80 / 0.03);
+  --elev-1: 0 1px 2px oklch(0.2 0.02 80 / 0.04), 0 10px 30px oklch(0.2 0.02 80 / 0.06);
   --elev-2: 0 1px 2px oklch(0.2 0.02 80 / 0.04), 0 8px 24px oklch(0.2 0.02 80 / 0.04);
   --elev-3: 0 8px 24px oklch(0.2 0.02 80 / 0.08);
 
@@ -639,9 +639,9 @@
        machinery is untouched, so a future depth pass only has to change these
        six numbers. Neither mode uses it today; both are asked to be one colour,
        and a reader would notice the top-left corner not being it. */
-    --page-from: #FCFBF9;
-    --page-via: #FCFBF9;
-    --page-to: #FCFBF9;
+    --page-from: #F6F5F2;
+    --page-via: #F6F5F2;
+    --page-to: #F6F5F2;
 
     --surface: rgba(255, 255, 255, 0.92);
     --surface-solid: #FFFFFF;

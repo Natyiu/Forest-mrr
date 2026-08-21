@@ -43,7 +43,6 @@ import { GuideModal } from './components/hud/GuideModal';
 import { StatusBlock } from './components/hud/StatusBlock';
 import { Toolbar, type Tool } from './components/hud/Toolbar';
 import { Surface } from './components/hud/ui';
-import { ControlBar } from './components/hud/ControlBar';
 import { PlantingAnimation } from './components/hud/PlantingAnimation';
 import { UnplantedBed } from './components/hud/UnplantedBed';
 import { FilterPopover } from './components/hud/FilterPopover';
@@ -83,7 +82,8 @@ import {
  */
 const ENABLED_FEATURES = [
   'filter',
-  'appearance',
+  // 'appearance', // theme + season live behind the account cluster's palette
+  //                  button now — one appearance setting, on every page.
   'globe',
   // 'search',    // the command palette     ·  ⌘K
   // 'revenue',   // the revenue panel       ·  R
@@ -298,6 +298,7 @@ export default function App({
   clean = false,
   spectate = false,
   bookQuery,
+  adsSlot,
 }: {
   accountSlot?: React.ReactNode;
   /** The startup switcher — the host app's, like the account menu. */
@@ -351,6 +352,12 @@ export default function App({
    * it, including what the server accepts.
    */
   bookQuery?: string;
+  /**
+   * The host app's sponsor strip, rendered only once the live book is up: a
+   * loading screen wearing ads is selling space on a page that is not there
+   * yet, and the empty plot's one job is the connect call to action.
+   */
+  adsSlot?: React.ReactNode;
 } = {}) {
   const { season: activeSeason, setAutoSeason, setMode, resolvedMode } = useTheme();
 
@@ -953,7 +960,9 @@ export default function App({
         : []),
 
       { id: 'filter', label: 'Search and filter', group: 'View', icon: SlidersHorizontal, combo: '/', run: () => setIsFilterOpen(true) },
-      { id: 'appearance', label: 'Appearance and season', group: 'View', icon: Palette, run: () => setIsAppearanceOpen(true) },
+      ...(enabled('appearance')
+        ? [{ id: 'appearance', label: 'Appearance and season', group: 'View', icon: Palette, run: () => setIsAppearanceOpen(true) }]
+        : []),
       // One row per shape rather than a cycle, because a palette is a list of
       // places you can go, not a button you press three times. Empties itself
       // when the other shapes are switched off.
@@ -1042,17 +1051,19 @@ export default function App({
       badge: activeFilters.length || undefined,
       group: 'find',
     },
-    {
-      id: 'appearance',
-      icon: Palette,
-      label: 'Appearance and season',
-      onClick: () => {
-        setIsFilterOpen(false);
-        setIsAppearanceOpen((open) => !open);
-      },
-      tone: isAppearanceOpen ? 'active' : 'plain',
-      group: 'view',
-    },
+    ...(enabled('appearance')
+      ? [{
+          id: 'appearance',
+          icon: Palette,
+          label: 'Appearance and season',
+          onClick: () => {
+            setIsFilterOpen(false);
+            setIsAppearanceOpen((open) => !open);
+          },
+          tone: isAppearanceOpen ? ('active' as const) : ('plain' as const),
+          group: 'view' as const,
+        }]
+      : []),
     /*
       The clean view, in the `view` group beside the palette button. It is the
       one tool that takes the chrome *away* rather than putting something over
@@ -1068,6 +1079,19 @@ export default function App({
           group: 'view' as Tool['group'],
         }]
       : []),
+    /*
+      Play, up here with the view controls rather than on the scrubber: set the
+      plot up the way you want it, then press this and watch the year sweep
+      through it. The scrubber below stays for picking a month by hand.
+    */
+    {
+      id: 'play',
+      icon: Play,
+      label: isPlaying ? 'Playing the year…' : 'Play the year',
+      onClick: handlePlayYear,
+      tone: isPlaying ? ('active' as const) : ('plain' as const),
+      group: 'view' as Tool['group'],
+    },
     ...(enabled('revenue')
       ? [{
           id: 'revenue',
@@ -1245,7 +1269,9 @@ export default function App({
         </div>
 
         <Toolbar tools={tools} account={accountSlot}>
-          <AppearancePopover open={isAppearanceOpen} onClose={() => setIsAppearanceOpen(false)} />
+          {enabled('appearance') && (
+            <AppearancePopover open={isAppearanceOpen} onClose={() => setIsAppearanceOpen(false)} />
+          )}
 
           <FilterPopover
             open={isFilterOpen}
@@ -1318,6 +1344,29 @@ export default function App({
                 }
           }
         />
+
+        {/*
+          The timeline, shown only while it means something: pressing Play slides
+          this in under the reading so the sweep can be watched month by month —
+          and it stays if you stop somewhere in the past, because a rail you can
+          see is also the way back. At rest on today it is not there at all.
+        */}
+        {(isPlaying || isOffToday) && snapshots.length > 1 && (
+          <Surface className="pointer-events-auto flex w-[300px] items-center gap-2.5 px-3.5 py-2">
+            <span className="w-[74px] shrink-0 text-[12px] font-bold tabular-nums text-ink">
+              {monthLabel}
+            </span>
+            <input
+              type="range"
+              min={0}
+              max={Math.max(0, snapshots.length - 1)}
+              value={scrubberIndex}
+              onChange={(event) => scrubTo(Number(event.target.value))}
+              aria-label="Month"
+              className="h-1 flex-1 cursor-pointer appearance-none rounded-full bg-track accent-garden outline-none"
+            />
+          </Surface>
+        )}
       </div>
 
       {/* Main Isometric Canvas */}
@@ -1326,6 +1375,9 @@ export default function App({
           gardenState={activeGarden}
           weatherState={effectiveWeather}
           selectedTier={selectedTier}
+          // The plot stands on the page itself: no painted sky, no drifting
+          // seasonal air, no sun wash — in any season. The scene is the trees.
+          plainBackground
           onSelectPlant={(plant) => setSelectedPlantId(plant?.subscription_id ?? null)}
           selectedPlant={selectedPlant}
           planting={planting}
@@ -1350,16 +1402,14 @@ export default function App({
         />
       </main>
 
-      <ControlBar
-        monthLabel={monthLabel}
-        index={scrubberIndex}
-        total={snapshots.length}
-        onScrub={scrubTo}
-        onPlay={handlePlayYear}
-        isPlaying={isPlaying}
-        shape={plantShape}
-        onShapeChange={setPlantShape}
-      />
+      {/*
+        The scrubber bar is gone: the toolbar's Play button is how history is
+        watched now, and it always comes back to rest on today. `?m=` links and
+        `scrubTo` remain wired, so a shared month still lands — there is just no
+        permanent bar for a control most visits never touched. `ControlBar` is
+        intact if it is ever wanted back.
+      */}
+      {adsSlot}
 
       {overlays}
     </div>

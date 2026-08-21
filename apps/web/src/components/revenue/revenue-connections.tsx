@@ -117,7 +117,7 @@ export function RevenueConnections({
               <Link
                 key={startup.id}
                 href={`/dashboard/startups/${startup.id}` as never}
-                className="flex items-center gap-3.5 rounded-2xl border border-border bg-card px-5 py-4 transition-colors hover:bg-muted/40"
+                className="flex items-center gap-3.5 rounded-2xl border border-border bg-card px-5 py-4 shadow-elev-1 transition-colors hover:bg-muted/40"
               >
                 <StartupMark
                   image={startup.image}

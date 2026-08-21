@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { FeedbackDialog } from "@/components/feedback-dialog";
-import { ThemeToggle } from "@/components/theme-toggle";
+import { AppearanceMenu } from "@/components/appearance-menu";
 import { IconButton, Popover, cx } from "@/garden/components/hud/ui";
 import { authClient } from "@/lib/auth-client";
 import { pageEnabled } from "@/lib/nav-features";
@@ -142,7 +142,7 @@ export function GardenAccount({
         it is *only* here: the plot's appearance popover used to carry a second
         copy and now keeps the season, which is the thing only it has.
       */}
-      <ThemeToggle />
+      <AppearanceMenu />
 
       <IconButton
         icon={Bell}
