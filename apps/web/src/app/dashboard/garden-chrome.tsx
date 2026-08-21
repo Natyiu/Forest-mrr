@@ -90,9 +90,9 @@ export function GardenBrand() {
  * thing and nothing else.
  */
 const TABS = [
-  { href: "/dashboard", label: "Garden", icon: Sprout, exact: true },
-  { href: "/dashboard/forests", label: "Forests", icon: Trees, exact: false },
-  { href: "/dashboard/startups", label: "Startups", icon: Building2, exact: false },
+  { href: "/dashboard", label: "My forest", icon: Sprout, exact: true },
+  { href: "/dashboard/forests", label: "Startups", icon: Trees, exact: false },
+  { href: "/dashboard/startups", label: "My startups", icon: Building2, exact: false },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];
 

@@ -139,6 +139,7 @@ function EmptyPlot({
   brandSlot,
   navSlot,
   transparent = false,
+  adsSlot,
 }: {
   book: { kind: 'loading' | 'live' | 'empty'; providers?: string[]; note?: string };
   onConnectRevenue?: () => void;
@@ -148,6 +149,8 @@ function EmptyPlot({
   navSlot?: React.ReactNode;
   /** Paint nothing behind the scene — for frames that sit on a host surface. */
   transparent?: boolean;
+  /** The sponsor strip — shown on the settled empty states, never while loading. */
+  adsSlot?: React.ReactNode;
 }) {
   const connected = (book.providers?.length ?? 0) > 0;
   const loading = book.kind === 'loading';
@@ -184,6 +187,8 @@ function EmptyPlot({
           </div>
         </header>
       )}
+
+      {!loading && adsSlot}
 
       <main className="flex flex-1 items-center justify-center p-6">
         {/*
@@ -1190,6 +1195,7 @@ export default function App({
         brandSlot={brandSlot}
         navSlot={navSlot}
         transparent={spectate}
+        adsSlot={spectate ? undefined : adsSlot}
       />
     );
   }
