@@ -7,7 +7,6 @@ import { fileURLToPath } from "url";
 import { auth, invalidateSettingsCache } from "@Batman/auth";
 import prisma from "@Batman/db";
 import { headers } from "next/headers";
-import geoip from "geoip-country";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ENV_PATH = resolve(__dirname, "../../../.env");
@@ -27,6 +26,25 @@ async function readEnvVars(): Promise<Record<string, string>> {
   } catch {
     return {};
   }
+}
+
+/* geoip-country opens its .dat database the moment it is imported, so a
+   deployment that is missing the data files throws on import — a static import
+   here would take down every action in this module, not just the country
+   counts. Loaded lazily instead; if it fails, every IP resolves to Unknown. */
+type GeoLookup = (ip: string) => { country: string; name: string } | null;
+let geoLookup: GeoLookup | null | undefined;
+
+async function getGeoLookup(): Promise<GeoLookup | null> {
+  if (geoLookup !== undefined) return geoLookup;
+  try {
+    const mod = await import("geoip-country");
+    geoLookup = mod.default.lookup as GeoLookup;
+  } catch (e) {
+    console.error("geoip-country unavailable; countries will be Unknown:", e);
+    geoLookup = null;
+  }
+  return geoLookup;
 }
 
 async function requireAdmin() {
@@ -326,6 +344,7 @@ export async function getOverview() {
   ]);
 
   // Resolve IPs to countries (top 5 for overview)
+  const lookup = await getGeoLookup();
   const userIpMap = new Map<string, string | null>();
   for (const s of recentSessions) {
     if (!userIpMap.has(s.userId)) {
@@ -341,7 +360,7 @@ export async function getOverview() {
       else countryCounts.set(UNKNOWN_KEY, { code: "XX", name: "Unknown", count: 1 });
       continue;
     }
-    const result = geoip.lookup(ip);
+    const result = lookup ? lookup(ip) : null;
     if (result) {
       const existing = countryCounts.get(result.country);
       if (existing) {
@@ -535,6 +554,7 @@ export async function getAnalytics() {
   }));
 
   // Resolve unique user IPs to countries
+  const lookup = await getGeoLookup();
   const userIpMap = new Map<string, string | null>();
   for (const s of recentSessions) {
     if (!userIpMap.has(s.userId)) {
@@ -550,7 +570,7 @@ export async function getAnalytics() {
       else countryCounts.set(UNKNOWN_KEY, { code: "XX", name: "Unknown", count: 1 });
       continue;
     }
-    const result = geoip.lookup(ip);
+    const result = lookup ? lookup(ip) : null;
     if (result) {
       const existing = countryCounts.get(result.country);
       if (existing) {
