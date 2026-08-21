@@ -9,7 +9,7 @@ import {
   ForestBoard,
 } from "@/components/forests/forest-board";
 import { AdRails } from "@/components/ads/ad-rails";
-import { getAdSpots } from "@/lib/ads.server";
+import { fulfilAdCheckout, getAdSpots } from "@/lib/ads.server";
 import { requireSession } from "@/lib/session";
 import {
   STARTUP_CATEGORIES,
@@ -61,9 +61,16 @@ const PILL_OFF =
 export default async function ForestsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; checkout_id?: string }>;
 }) {
   const [session, params] = await Promise.all([requireSession(), searchParams]);
+
+  // Just paid? Create the spot from the checkout before the board renders, so
+  // the buyer sees their product on this very page load — no wait on a webhook.
+  if (params.checkout_id) {
+    await fulfilAdCheckout(params.checkout_id).catch(() => {});
+  }
+
   const selected =
     params.category && isStartupCategory(params.category) ? params.category : null;
 

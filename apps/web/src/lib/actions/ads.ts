@@ -122,7 +122,7 @@ export async function createAdCheckout(
       products: [productId],
       externalCustomerId: session.user.id,
       customerName: session.user.name ?? undefined,
-      successUrl: `${origin}/dashboard/forests?ad-checkout=success`,
+      successUrl: `${origin}/dashboard/forests?ad-checkout=success&checkout_id={CHECKOUT_ID}`,
       returnUrl: `${origin}/dashboard/forests`,
       metadata: {
         kind: "ad-spot",

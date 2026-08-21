@@ -217,7 +217,7 @@ function EmptyPlot({
           tried here and all taken out: each was one more thing to read before the
           one thing to do.
         */
-        <div className="w-full max-w-[460px] rounded-[28px] bg-surface-solid px-8 pb-8 pt-7 text-center shadow-modal sm:px-10">
+        <div className="w-full max-w-[460px] rounded-[20px] bg-surface-solid px-8 pb-8 pt-7 text-center shadow-panel ring-1 ring-hairline sm:px-10">
           <div className="mx-auto max-w-[360px]">
             <UnplantedBed variant={connected ? 'waiting' : 'legend'} />
           </div>

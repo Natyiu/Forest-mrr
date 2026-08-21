@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { manrope } from "@/lib/fonts";
 import {
   DodoPaymentsLogo,
@@ -237,7 +236,7 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
         // fills the rest. **Tablet (`sm`–`lg`)** has no design of its own: it
         // takes the desktop artwork anchored to the bottom edge at 130% width
         // with `pb-[46vw]` reserved for it. **Desktop (`lg`)** is untouched.
-        className="forest-landing relative isolate flex aspect-[430/932] flex-col overflow-hidden bg-fl-ground bg-[url(/landing-bg-mobile.svg)] bg-[length:100%_auto] bg-top bg-no-repeat text-fl-ink sm:m-5 sm:aspect-auto sm:min-h-[calc(100svh-2.5rem)] sm:rounded-4xl sm:bg-[url(/landing-bg.svg)] sm:bg-[length:130%_auto] sm:bg-bottom sm:pb-[46vw] lg:h-[calc(125vh-2.5rem)] lg:min-h-[calc(125vh-2.5rem)] lg:bg-[length:auto_111%] lg:bg-[position:center_40px] lg:pb-0"
+        className="forest-landing relative isolate flex aspect-[430/932] flex-col overflow-hidden bg-fl-ground bg-[url(/landing-bg-mobile.svg)] bg-[length:100%_auto] bg-top bg-no-repeat text-fl-ink sm:m-5 sm:aspect-auto sm:min-h-[calc(100svh-2.5rem)] sm:rounded-4xl sm:bg-[url(/landing-bg.svg)] sm:bg-[length:130%_auto] sm:bg-bottom sm:pb-[46vw] lg:h-[calc(100svh-2.5rem)] lg:min-h-[calc(100svh-2.5rem)] lg:bg-[length:auto_72%] lg:bg-[position:center_bottom] lg:pb-0"
       >
         {/*
           The whole poster ground — mint, clouds and the plot — is one image, so
@@ -273,28 +272,13 @@ export function LandingPage({ supportEmail }: { supportEmail?: string }) {
               />
             </Link>
 
-            <div className="flex items-center gap-1 sm:gap-2">
-              <a
-                href="#how"
-                className="hidden rounded-full px-3 py-2 text-[13px] font-medium text-fl-muted transition-colors hover:text-fl-ink sm:inline"
-              >
-                How it works
-              </a>
-              <Link
-                href="/login"
-                className="rounded-full px-3 py-2 text-[13px] font-medium text-fl-muted transition-colors hover:text-fl-ink"
-              >
-                Sign in
-              </Link>
-              <span className="[&_button:hover]:bg-fl-green/10 [&_button]:text-fl-muted [&_button:hover]:text-fl-ink">
-                <ThemeToggle />
-              </span>
-              <Link href="/signup">
-                <Button className="h-9 rounded-full border-0 bg-fl-green px-4 text-[13px] font-medium text-white shadow-none hover:bg-fl-green/90">
-                  Get started
-                </Button>
-              </Link>
-            </div>
+            {/* One button, the design's own: the header is the wordmark and the
+                single call to action, nothing competing with it. */}
+            <Link href="/signup">
+              <Button className="h-11 rounded-full border-0 bg-fl-green px-6 text-[15px] font-semibold text-white shadow-none hover:bg-fl-green/90">
+                Forest your MRR
+              </Button>
+            </Link>
           </header>
 
           <div className="relative z-10 mx-auto max-w-3xl px-5 pt-16 text-center sm:px-6 sm:pt-20 lg:pt-24">

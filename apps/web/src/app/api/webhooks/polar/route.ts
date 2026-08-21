@@ -38,7 +38,14 @@ export async function POST(req: NextRequest) {
           {}) as Record<string, unknown>;
 
       if (paid && metadata.kind === "ad-spot") {
-        const orderId = String((data as { id?: string }).id ?? "");
+        // Key on the checkout, not the order: the success page fulfils by
+        // checkout id too, so both paths converge on one row.
+        const key = String(
+          (data as { checkout_id?: string; checkoutId?: string }).checkout_id ??
+            (data as { checkoutId?: string }).checkoutId ??
+            (data as { id?: string }).id ??
+            "",
+        );
         const placementRaw = String(metadata.placement ?? "bundle");
         const placement = ["garden", "forests", "bundle"].includes(placementRaw)
           ? placementRaw
@@ -47,10 +54,10 @@ export async function POST(req: NextRequest) {
         const tagline = String(metadata.tagline ?? "").trim();
         const href = String(metadata.website ?? "").trim();
 
-        if (orderId && name && href) {
+        if (key && name && href) {
           await prisma.adSpot.upsert({
-            where: { orderId },
-            create: { orderId, name, tagline, href, placement },
+            where: { orderId: key },
+            create: { orderId: key, name, tagline, href, placement },
             update: {},
           });
         }
