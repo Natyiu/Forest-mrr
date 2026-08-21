@@ -40,7 +40,7 @@ async function getResendClient(): Promise<Resend | null> {
   return new Resend(apiKey);
 }
 
-const RESEND_DEFAULT_FROM = "Batman <onboarding@resend.dev>";
+const RESEND_DEFAULT_FROM = "Forest MRR <onboarding@resend.dev>";
 
 async function sendEmail(to: string, subject: string, html: string) {
   try {
@@ -133,7 +133,7 @@ export const auth = betterAuth({
     requireEmailVerification: _requireEmailVerification,
     async sendResetPassword({ user, url }) {
       const settings = await getSettings();
-      const appName = settings?.appName ?? "Batman";
+      const appName = settings?.appName ?? "Forest MRR";
       await sendEmail(
         user.email,
         `Reset your ${appName} password`,
@@ -149,7 +149,7 @@ export const auth = betterAuth({
     async sendVerificationEmail({ user, url }) {
       const settings = await getSettings();
       if (!settings?.emailVerificationEnabled) return;
-      const appName = settings.appName ?? "Batman";
+      const appName = settings.appName ?? "Forest MRR";
       // Land on the dashboard after verification
       try {
         const urlObj = new URL(url);
@@ -297,7 +297,7 @@ export const auth = betterAuth({
       async sendInvitationEmail({ email, organization: org, inviter }) {
         const settings = await getSettings();
         if (!settings?.invitesEnabled) return;
-        const appName = settings.appName ?? "Batman";
+        const appName = settings.appName ?? "Forest MRR";
         const acceptUrl = `${env.BETTER_AUTH_URL}/dashboard/invitations`;
         await sendEmail(
           email,

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const DEFAULT_TITLE = "Batman — The Dark Knight Boilerplate";
+const DEFAULT_TITLE = "Forest MRR — Your revenue, growing";
 const DEFAULT_DESCRIPTION =
-  "A production-ready full-stack boilerplate forged in the shadows of Gotham. Next.js, Prisma, Better Auth, and more.";
+  "See your subscription revenue as a living garden — one tree per subscription, drawn at the size it actually pays. Connect Stripe, Polar, LemonSqueezy and more.";
 
 /**
  * The favicon, as metadata rather than an `app/icon.svg` file: Next 16.1's

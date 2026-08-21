@@ -29,7 +29,7 @@ export default function Header() {
         <div className="flex items-center gap-6">
           <Link href="/" className="flex items-center gap-2">
             <BatLogo className="h-4 w-auto text-primary" />
-            <span className="text-xs font-semibold tracking-widest uppercase">Batman</span>
+            <span className="text-xs font-semibold tracking-widest uppercase">Forest MRR</span>
           </Link>
           <nav className="flex gap-4">
             {links.map(({ to, label }) => (

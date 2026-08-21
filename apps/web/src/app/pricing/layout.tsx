@@ -30,7 +30,7 @@ export default function PricingLayout({
               <Link href="/" className="flex items-center gap-2">
                 <BatLogo className="h-3.5 w-auto text-foreground" />
                 <span className="text-[11px] font-semibold tracking-widest uppercase">
-                  Batman
+                  Forest MRR
                 </span>
               </Link>
               <Link
@@ -49,7 +49,7 @@ export default function PricingLayout({
 
         <footer className="py-4 px-6 sm:px-8 lg:px-10">
           <p className="text-[10px] text-muted-foreground/30">
-            &copy; {new Date().getFullYear()} Batman
+            &copy; {new Date().getFullYear()} Forest MRR
           </p>
         </footer>
       </div>

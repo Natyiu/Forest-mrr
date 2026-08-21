@@ -2,7 +2,7 @@ import prisma from "@Batman/db";
 import { env } from "@Batman/env/server";
 import { Resend } from "resend";
 
-const RESEND_DEFAULT_FROM = "Batman <onboarding@resend.dev>";
+const RESEND_DEFAULT_FROM = "Forest MRR <onboarding@resend.dev>";
 
 export async function sendEmail(to: string, subject: string, html: string): Promise<boolean> {
   try {

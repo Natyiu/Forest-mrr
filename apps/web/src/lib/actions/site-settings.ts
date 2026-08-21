@@ -37,7 +37,7 @@ export async function getSiteSettings() {
           headline: settings.countdownHeadline ?? "We're launching soon",
           description: settings.countdownDescription ?? "",
           endMessage: settings.countdownEndMessage ?? "We're live! Check back soon.",
-          appName: settings.appName ?? "Batman",
+          appName: settings.appName ?? "Forest MRR",
           supportEmail: settings.supportEmail ?? "",
         }
       : null;
@@ -51,7 +51,7 @@ export async function getSiteSettings() {
           successMessage: settings.waitlistSuccessMessage ?? "You're on the list!",
           showName: settings.waitlistShowName ?? false,
           showCompany: settings.waitlistShowCompany ?? false,
-          appName: settings.appName ?? "Batman",
+          appName: settings.appName ?? "Forest MRR",
           supportEmail: settings.supportEmail ?? "",
         }
       : null;

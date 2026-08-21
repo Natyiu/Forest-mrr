@@ -1,4 +1,4 @@
-# Batman bo
+# Forest MRR
 
 This file provides context about the project for AI assistants.
 
@@ -39,7 +39,7 @@ This file provides context about the project for AI assistants.
 ## Project Structure
 
 ```
-Batman/
+forest-mrr/
 ├── apps/
 │   ├── allotment/   # The garden, standalone (Express + Vite + React 19) — see below
 │   ├── marketing/   # Marketing landing & purchase flow (seller-only, excluded from boilerplate)

@@ -41,7 +41,7 @@ export default async function VerifyEmailPage() {
       <header className="border-b border-border/40">
         <div className="max-w-2xl mx-auto px-4 flex h-12 items-center justify-between">
           <Link href="/" className="text-[11px] font-semibold tracking-widest uppercase">
-            Batman
+            Forest MRR
           </Link>
           <Link
             href="/login"

@@ -1,7 +1,7 @@
 model AppSettings {
   id                       String    @id @default("default")
   onboardingEnabled        Boolean   @default(true)
-  appName                  String    @default("Batman")
+  appName                  String    @default("Forest MRR")
   appDescription           String    @default("")
   appUrl                   String    @default("")
   metaTitle                String?

@@ -1,12 +1,12 @@
-# Batman — X/Twitter Post Generator Context
+# Forest MRR — X/Twitter Post Generator Context
 
-Use this file as context when generating X/Twitter posts (single posts or threads) for Batman.
+Use this file as context when generating X/Twitter posts (single posts or threads) for Forest MRR.
 
 ---
 
 ## Product Overview
 
-**Name:** Batman  
+**Name:** Forest MRR  
 **Tagline:** Founder stack / boilerplate  
 **What it is:** A production-ready Next.js boilerplate for indie founders and solo builders who want to ship SaaS products fast. Built with Better Fullstack.
 

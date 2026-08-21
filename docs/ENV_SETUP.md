@@ -1,6 +1,6 @@
-# Batman — Environment Variables Setup Guide
+# Forest MRR — Environment Variables Setup Guide
 
-This guide explains every environment variable used by Batman, where to get each value, and how they map to features (auth, database, email, OAuth, payments, storage).
+This guide explains every environment variable used by Forest MRR, where to get each value, and how they map to features (auth, database, email, OAuth, payments, storage).
 
 > **Tip:** The Setup Wizard (`pnpm dev` → localhost:3001) generates `.env` for you. Use this guide when configuring manually or troubleshooting.
 

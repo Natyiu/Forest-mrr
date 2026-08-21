@@ -24,7 +24,7 @@ interface GardenServer {
   subscribers: Set<Subscriber>;
 }
 
-const KEY = Symbol.for("batman.garden.server");
+const KEY = Symbol.for("forestmrr.garden.server");
 type GlobalWithGarden = typeof globalThis & { [KEY]?: GardenServer };
 
 export function gardenServer(): GardenServer {

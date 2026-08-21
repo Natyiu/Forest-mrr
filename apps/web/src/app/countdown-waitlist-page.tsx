@@ -127,7 +127,7 @@ export function CountdownWaitlistPage({
     }
   }
 
-  const appName = countdown.appName || waitlist.appName || "Batman";
+  const appName = countdown.appName || waitlist.appName || "Forest MRR";
   const supportEmail = countdown.supportEmail || waitlist.supportEmail;
 
   return (

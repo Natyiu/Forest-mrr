@@ -25,7 +25,7 @@ export default function BlogLayout({
           <Link href="/" className="flex items-center gap-2">
             <BatLogo className="h-3.5 w-auto text-foreground" />
             <span className="text-[11px] font-semibold tracking-widest uppercase">
-              Batman
+              Forest MRR
             </span>
           </Link>
           <div className="flex items-center gap-1">
@@ -49,7 +49,7 @@ export default function BlogLayout({
 
       <footer className="border-t border-border/40 py-4">
         <div className="max-w-2xl mx-auto px-4 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 text-[10px] text-muted-foreground/40">
-          <span>&copy; {new Date().getFullYear()} Batman</span>
+          <span>&copy; {new Date().getFullYear()} Forest MRR</span>
           <Link href="/legal/privacy" className="hover:text-muted-foreground/60 transition-colors">
             Privacy
           </Link>

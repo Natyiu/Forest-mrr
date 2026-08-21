@@ -1,4 +1,4 @@
-# Batman
+# Forest MRR
 
 This project was created with [Better Fullstack](https://github.com/Marve10s/Better-Fullstack), a modern TypeScript stack that combines Next.js, Prisma, Better Auth, and more.
 
@@ -48,14 +48,14 @@ All major features can be toggled on/off from the admin panel (**Admin > Feature
 
 ```bash
 # If you downloaded the zip (from purchase):
-unzip Batman.zip && cd Batman
+unzip forest-mrr.zip && cd forest-mrr
 
 # Or if cloning:
 git clone <your-repo-url>
-cd Batman
+cd forest-mrr
 ```
 
-> **Selling on Vibecoded or similar?** Run `pnpm run build:download` to generate `Batman.zip` with the correct structure (`package.json` at zip root, `pnpm-workspace.yaml`, `apps/web`, `packages/*` — no marketing app). Upload that zip to your distribution platform.
+> **Selling on Vibecoded or similar?** Run `pnpm run build:download` to generate `forest-mrr.zip` with the correct structure (`package.json` at zip root, `pnpm-workspace.yaml`, `apps/web`, `packages/*` — no marketing app). Upload that zip to your distribution platform.
 
 ### 2. Install dependencies
 
@@ -131,7 +131,7 @@ All keys are stored in the database and can be changed anytime without redeployi
 ## Project Structure
 
 ```
-Batman/
+forest-mrr/
 ├── apps/
 │   └── web/                          # Next.js application
 │       └── src/

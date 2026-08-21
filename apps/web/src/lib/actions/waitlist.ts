@@ -41,7 +41,7 @@ export async function getWaitlistSettings() {
     successMessage: settings.waitlistSuccessMessage,
     showName: settings.waitlistShowName ?? false,
     showCompany: settings.waitlistShowCompany ?? false,
-    appName: settings.appName ?? "Batman",
+    appName: settings.appName ?? "Forest MRR",
     supportEmail: settings.supportEmail ?? "",
   };
 }

@@ -9,7 +9,7 @@ import { notifyUser } from "@/lib/notify";
 const DEFAULT_APP_SETTINGS = {
   id: "default",
   onboardingEnabled: true,
-  appName: "Batman",
+  appName: "Forest MRR",
   appDescription: "",
   appUrl: "",
   metaTitle: null as string | null,

@@ -22,7 +22,7 @@ export default async function MaintenancePage() {
   const message =
     settings?.maintenanceMessage?.trim() ||
     "We're performing scheduled maintenance. We'll be back shortly.";
-  const appName = settings?.appName?.trim() || "Batman";
+  const appName = settings?.appName?.trim() || "Forest MRR";
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6">

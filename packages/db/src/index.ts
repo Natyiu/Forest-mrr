@@ -95,7 +95,7 @@ function createClient(): PrismaClient {
   return new PrismaClient({ adapter });
 }
 
-const KEY = Symbol.for("batman.prisma");
+const KEY = Symbol.for("forestmrr.prisma");
 
 /**
  * The pinned client is kept **with the generated class it was built from**.

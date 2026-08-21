@@ -22,7 +22,7 @@ import prisma from "@Batman/db";
  * else's startup id, and the plot would change business on a back button.
  */
 
-export const ACTIVE_STARTUP_COOKIE = "batman.startup";
+export const ACTIVE_STARTUP_COOKIE = "forestmrr.startup";
 
 /** Every startup's book at once. */
 export const ALL_STARTUPS = "all" as const;
