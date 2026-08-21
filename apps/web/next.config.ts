@@ -20,6 +20,24 @@ const nextConfig: NextConfig = {
     "/admin": geoipData,
     "/admin/analytics": geoipData,
   },
+  /* PostHog reverse proxy: the SDK talks to /ingest on our own domain so ad
+     blockers filtering *.posthog.com don't drop events. The assets host is a
+     separate upstream and must be matched first. PostHog's API uses trailing
+     slashes; without skipTrailingSlashRedirect Next 308-redirects them and the
+     events die on the redirect. */
+  skipTrailingSlashRedirect: true,
+  async rewrites() {
+    return [
+      {
+        source: "/ingest/static/:path*",
+        destination: "https://us-assets.i.posthog.com/static/:path*",
+      },
+      {
+        source: "/ingest/:path*",
+        destination: "https://us.i.posthog.com/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
