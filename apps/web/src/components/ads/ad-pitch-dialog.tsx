@@ -70,12 +70,18 @@ export function AdPitchDialog({
   const [website, setWebsite] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  // Sticky: once we have the checkout URL and start navigating away, the button
+  // must stay in its loading state until the page unloads. `isPending` flips
+  // back to false the instant the action returns — a beat before the browser
+  // actually leaves — which flashed the button back to "Pay $X" for a second.
+  const [redirecting, setRedirecting] = useState(false);
 
   const close = (next: boolean) => {
     onOpenChange(next);
     if (!next) {
       setKind(null);
       setError(null);
+      setRedirecting(false);
     }
   };
 
@@ -94,6 +100,7 @@ export function AdPitchDialog({
         website: website.trim(),
       });
       if (result.ok) {
+        setRedirecting(true);
         window.location.href = result.url;
       } else {
         setError(result.message);
@@ -208,9 +215,9 @@ export function AdPitchDialog({
             <Button
               className="h-11 w-full rounded-full text-sm font-semibold"
               onClick={pay}
-              disabled={isPending}
+              disabled={isPending || redirecting}
             >
-              {isPending ? (
+              {isPending || redirecting ? (
                 <>
                   <Loader2 className="size-4 animate-spin" />
                   Opening checkout…

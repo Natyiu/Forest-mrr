@@ -6,7 +6,6 @@ import { Polar } from "@polar-sh/sdk";
 import prisma from "@Batman/db";
 
 import { requireSession } from "@/lib/session";
-import { BUNDLE_PRICE, FORESTS_SPOT_PRICE, GARDEN_SPOT_PRICE } from "@/lib/ads";
 
 /**
  * **Buying an ad spot: form → Polar checkout.**
@@ -27,24 +26,6 @@ import { BUNDLE_PRICE, FORESTS_SPOT_PRICE, GARDEN_SPOT_PRICE } from "@/lib/ads";
  * when it no longer matches.
  */
 
-const PLACEMENT_PRODUCTS = {
-  garden: {
-    name: "Ad spot — Garden page",
-    description: "Your product pinned on the Forest MRR garden page.",
-    priceCents: GARDEN_SPOT_PRICE * 100,
-  },
-  forests: {
-    name: "Ad spot — Forests board",
-    description: "Your product pinned on the Forest MRR forests board.",
-    priceCents: FORESTS_SPOT_PRICE * 100,
-  },
-  bundle: {
-    name: "Ad spots — Garden + Forests bundle",
-    description: "Your product pinned on both Forest MRR pages.",
-    priceCents: BUNDLE_PRICE * 100,
-  },
-} as const;
-
 /**
  * The three products, pinned by id.
  *
@@ -53,7 +34,12 @@ const PLACEMENT_PRODUCTS = {
  * fallback below never runs. Leave one empty and that placement falls back to
  * finding-or-creating a product by name, so the flow works either way.
  */
-const CONFIGURED_PRODUCT_IDS: Record<keyof typeof PLACEMENT_PRODUCTS, string | undefined> = {
+/**
+ * Each placement maps to a Polar product **you created and gave the id of**.
+ * These are used exactly as configured — the checkout never creates a product,
+ * so the app can only ever sell the three you set up.
+ */
+const CONFIGURED_PRODUCT_IDS: Record<"garden" | "forests" | "bundle", string | undefined> = {
   garden: process.env.POLAR_AD_PRODUCT_GARDEN?.trim() || undefined,
   forests: process.env.POLAR_AD_PRODUCT_FORESTS?.trim() || undefined,
   bundle: process.env.POLAR_AD_PRODUCT_BUNDLE?.trim() || undefined,
@@ -90,46 +76,6 @@ async function polarClient(): Promise<Polar | null> {
   return new Polar({ accessToken: token, ...(sandbox && { server: "sandbox" as const }) });
 }
 
-interface ListedProduct {
-  id: string;
-  name: string;
-  prices?: Array<{ priceAmount?: number }>;
-}
-
-async function ensureAdProduct(
-  polar: Polar,
-  placement: keyof typeof PLACEMENT_PRODUCTS,
-): Promise<string> {
-  const wanted = PLACEMENT_PRODUCTS[placement];
-
-  const iterator = await polar.products.list({ isArchived: false });
-  for await (const page of iterator) {
-    const items =
-      ((page as { result?: { items?: ListedProduct[] } }).result?.items ?? []) as ListedProduct[];
-    const match = items.find(
-      (product) =>
-        product.name === wanted.name &&
-        (product.prices ?? []).some((price) => price.priceAmount === wanted.priceCents),
-    );
-    if (match) return match.id;
-    break; // first page only — three known names live near the top or not at all
-  }
-
-  const created = await polar.products.create({
-    name: wanted.name,
-    description: wanted.description,
-    recurringInterval: null,
-    prices: [
-      {
-        amountType: "fixed" as const,
-        priceCurrency: "usd" as const,
-        priceAmount: wanted.priceCents,
-      },
-    ],
-  });
-  return (created as { id: string }).id;
-}
-
 export async function createAdCheckout(
   raw: unknown,
 ): Promise<{ ok: true; url: string } | { ok: false; message: string }> {
@@ -150,10 +96,12 @@ export async function createAdCheckout(
     return { ok: false, message: "Payments are not configured yet — email us instead." };
   }
 
+  const productId = CONFIGURED_PRODUCT_IDS[parsed.data.placement];
+  if (!productId) {
+    return { ok: false, message: "This ad placement is not configured yet." };
+  }
+
   try {
-    const productId =
-      CONFIGURED_PRODUCT_IDS[parsed.data.placement] ??
-      (await ensureAdProduct(polar, parsed.data.placement));
 
     const origin = (
       process.env.BETTER_AUTH_URL ||
