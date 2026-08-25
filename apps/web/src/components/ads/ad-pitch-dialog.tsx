@@ -33,12 +33,12 @@ import {
 const PLACEMENTS = {
   garden: {
     price: GARDEN_SPOT_PRICE,
-    where: "the Garden page",
+    where: "the My forest page",
     reach: "the dashboard founders open every day to look at their revenue",
   },
   forests: {
     price: FORESTS_SPOT_PRICE,
-    where: "the Forests board",
+    where: "the Leaderboard",
     reach: "the public leaderboard where founders browse and compare startups",
   },
 } as const;
@@ -48,8 +48,8 @@ export type AdPlacement = keyof typeof PLACEMENTS;
 type Kind = AdPlacement | "bundle";
 
 const KIND_LABELS: Record<Kind, { price: number; label: string }> = {
-  garden: { price: GARDEN_SPOT_PRICE, label: "one spot on the Garden page" },
-  forests: { price: FORESTS_SPOT_PRICE, label: "one spot on the Forests board" },
+  garden: { price: GARDEN_SPOT_PRICE, label: "one spot on the My forest page" },
+  forests: { price: FORESTS_SPOT_PRICE, label: "one spot on the Leaderboard" },
   bundle: { price: BUNDLE_PRICE, label: "spots on both pages" },
 };
 
@@ -161,7 +161,7 @@ export function AdPitchDialog({
                 Recommended: take both pages for ${BUNDLE_PRICE}
               </span>
               <span className="mt-0.5 block text-[11.5px] text-muted-foreground">
-                Garden + Forests together — $
+                The My forest and Leaderboard pages together — $
                 {GARDEN_SPOT_PRICE + FORESTS_SPOT_PRICE} worth of placement, $
                 {GARDEN_SPOT_PRICE + FORESTS_SPOT_PRICE - BUNDLE_PRICE} off.
               </span>

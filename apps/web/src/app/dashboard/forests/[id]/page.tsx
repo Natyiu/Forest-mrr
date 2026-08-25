@@ -92,7 +92,7 @@ export default async function PublicForestPage({
             className="mb-2 inline-flex items-center gap-1 text-xs text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="size-3.5" />
-            All forests
+            Leaderboard
           </Link>
           <div className="flex items-center gap-3.5">
             <StartupMark

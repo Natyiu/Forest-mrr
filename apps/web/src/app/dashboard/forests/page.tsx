@@ -185,7 +185,7 @@ export default async function ForestsPage({
           The open valley
         </p>
         <h1 className="mt-1 text-[28px] font-bold leading-none tracking-[-0.03em] text-ink">
-          Forests
+          Leaderboard
         </h1>
         <p className="mt-2 text-[14px] text-ink-soft">
           Every forest standing in the open, tallest first. Click one and its plot

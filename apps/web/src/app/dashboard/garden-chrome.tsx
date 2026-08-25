@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building2, Settings, Sprout, Trees } from "lucide-react";
+import { Building2, Settings, Sprout, Trophy } from "lucide-react";
 
 import { Surface, cx } from "@/garden/components/hud/ui";
 
@@ -78,7 +78,7 @@ export function GardenBrand() {
 }
 
 /**
- * Garden · Startups · Settings, as one segmented pill.
+ * My forest · Leaderboard · My startups · Settings, as one segmented pill.
  *
  * On **every** page, not just the plot: it is the app's only navigation, so it is
  * also the way back from wherever you went. Three icons rather than three words —
@@ -91,7 +91,9 @@ export function GardenBrand() {
  */
 const TABS = [
   { href: "/dashboard", label: "My forest", icon: Sprout, exact: true },
-  { href: "/dashboard/forests", label: "Startups", icon: Trees, exact: false },
+  // The public board. It was labelled "Startups", which next to "My startups"
+  // was two buttons whose difference nobody should have to work out.
+  { href: "/dashboard/forests", label: "Leaderboard", icon: Trophy, exact: false },
   { href: "/dashboard/startups", label: "My startups", icon: Building2, exact: false },
   { href: "/dashboard/settings", label: "Settings", icon: Settings, exact: false },
 ];

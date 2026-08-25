@@ -276,18 +276,18 @@ export function StartupSettings({
             <h3 className="flex items-center gap-2 text-xs font-semibold">
               Make it public
               <Badge variant={isPublic ? "success" : "secondary"}>
-                {isPublic ? "On the board" : "Private"}
+                {isPublic ? "On the leaderboard" : "Private"}
               </Badge>
             </h3>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              List this forest on the Forests board — name, mark, MRR and tree count.
+              List this forest on the leaderboard — name, mark, MRR and tree count.
               Nothing else.
             </p>
           </div>
           <Switch
             checked={isPublic}
             disabled={publicPending}
-            aria-label="List this forest on the public board"
+            aria-label="List this forest on the leaderboard"
             onCheckedChange={(next) => {
               setIsPublic(next);
               startPublicTransition(async () => {
@@ -298,7 +298,7 @@ export function StartupSettings({
                 } else {
                   toast.success(
                     next
-                      ? `${startup.name} is on the public board.`
+                      ? `${startup.name} is on the leaderboard.`
                       : `${startup.name} is private again.`,
                   );
                   router.refresh();

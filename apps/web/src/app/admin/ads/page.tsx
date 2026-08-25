@@ -99,8 +99,8 @@ export default function AdminAdsPage() {
             <div className="flex flex-wrap gap-1.5">
               {([
                 ["bundle", "Both pages ($700)"],
-                ["garden", "Garden only ($500)"],
-                ["forests", "Forests only ($300)"],
+                ["garden", "My forest only ($500)"],
+                ["forests", "Leaderboard only ($300)"],
               ] as const).map(([value, label]) => (
                 <button
                   key={value}
@@ -157,9 +157,9 @@ export default function AdminAdsPage() {
                     <p className="truncate text-sm font-medium">{row.name}</p>
                     <span className="shrink-0 rounded-full border border-border px-2 py-0.5 text-[10px] text-muted-foreground">
                       {row.placement === "garden"
-                        ? "Garden"
+                        ? "My forest"
                         : row.placement === "forests"
-                          ? "Forests"
+                          ? "Leaderboard"
                           : "Both pages"}
                     </span>
                   </div>
