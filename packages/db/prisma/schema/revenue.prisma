@@ -36,6 +36,16 @@ model Startup {
   website     String?
   description String?
 
+  /// The embed capability: an unguessable token that serves this forest to
+  /// anyone who holds it, signed in or not — the iframe on the founder's own
+  /// landing page. Null means embedding is off, which is the default: this is
+  /// a second door onto the book, separate from `isPublic` (the board lists a
+  /// forest to signed-in users; the token hands it to the open web), so each
+  /// is its own switch. Turning embedding off deletes the token, and turning
+  /// it back on mints a fresh one — that *is* the revocation story, and the
+  /// settings copy says so.
+  embedToken String? @unique
+
   /// The reading the public board shows, written as a side effect of the
   /// owner's own garden deriving their forest — so the board never opens
   /// anyone's sealed keys and a visitor's page load costs zero provider calls.

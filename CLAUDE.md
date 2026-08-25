@@ -53,7 +53,9 @@ forest-mrr/
 │           │   └── revenue/     # the connect dialog and the connections list
 │           └── app/
 │               ├── dashboard/   # /dashboard IS the garden
+│               ├── embed/       # /embed/[token] — a forest framed on someone's own site
 │               └── api/garden/  # garden, history, plans, stream, simulate-event
+│                                #   (?embed=<token> is the public, CORS-open door)
 ├── packages/
 │   ├── auth/        # Authentication
 │   └── db/          # Database schema
@@ -404,6 +406,47 @@ plot's** call to action remains, because that is the one moment the answer to
 startup* per user, the old `(userId, provider)` unique was dropped and the new one
 added, in one transaction. `userId` is kept on the connection alongside `startupId`
 so "everything this person can see" stays one indexed read.
+
+### The embed — a forest on the founder's own site (web)
+
+**A public, token-gated door onto one startup's book, so its forest can stand in
+an `<iframe>` on the founder's own landing page.** Turned on per startup from its
+settings page, which shows the copy-paste snippet and the JSON addresses.
+
+- **The token is the whole permission.** `Startup.embedToken` (nullable, unique)
+  is 18 random bytes as base64url, minted by `setStartupEmbed` and resolved by
+  `embedScope` in `lib/startups.ts`. No session, no viewer identity, no
+  `isPublic` check — an embed's visitors are anonymous strangers on somebody
+  else's site, so asking who is looking is the question the feature exists to
+  not need. It is deliberately a *second* switch beside `isPublic`: the board
+  lists a forest to signed-in users, the token hands it to the open web, and
+  neither should drag the other along.
+- **Revocation is deletion.** Off sets the column null and every iframe and API
+  call holding the old token 404s from that moment; on again mints a *different*
+  token rather than resurrecting the leaked one. The settings copy says so, and
+  it also says plainly what the token exposes: the full book — tree sizes, plan
+  names, customer names — because that honesty is the price of the switch.
+- **`?embed=<token>` opens `/api/garden` and `/api/garden/history` before the
+  session gate**, mirroring the `?startup=` spectate branch response-for-response
+  (one book, one derivation, one cache — the two halves must be gated
+  identically). Those responses carry `Access-Control-Allow-Origin: *`
+  (`EMBED_CORS` in `garden/server/guard.ts`), which makes the same URLs the
+  public JSON API; `*` is correct because the token is the credential and no
+  cookie is ever involved in that branch. Unknown token: 404, same as a private
+  forest — it does not exist.
+- **`/embed/<token>` is the page the iframe points at** — the real renderer in
+  `spectate` mode (`components/forests/forest-embed.tsx`), served through the
+  owner's caches, so a busy landing page costs no extra provider calls. `html`
+  and `body` are made transparent so the plot stands on the host site's own
+  surface, and the page is `robots: noindex`: a search engine printing an
+  unguessable URL would spend that property for nothing.
+- **The theme is the founder's, pinned by `?theme=dark` on the URL** (default
+  light). An embed is part of a page somebody designed, so the *visitor's*
+  preference for this app must not repaint it: `ThemeSync` and
+  `FloatingThemeToggle` both stand down under `/embed`, the embed page's inline
+  script sets `data-mode` before first paint, and `ForestEmbed` hands the
+  garden's `ThemeProvider` the mode with a no-op `onModeChange` so nothing ever
+  writes storage.
 
 ### Importing real revenue (web)
 

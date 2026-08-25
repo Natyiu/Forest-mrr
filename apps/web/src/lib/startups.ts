@@ -52,6 +52,12 @@ export interface StartupView {
   connections: number;
   /** Whether this forest is listed on the public board. */
   isPublic: boolean;
+  /**
+   * The embed token, or null when embedding is off. Only ever the owner's own —
+   * `listStartups` is always scoped to the caller — so it reaching the browser
+   * is the founder seeing their own snippet, not a leak.
+   */
+  embedToken: string | null;
   /** A `STARTUP_CATEGORIES` value, for the board's per-category leaderboards. */
   category: string | null;
   /** The directory entry: where the business lives, in the founder's words. */
@@ -70,6 +76,7 @@ export async function listStartups(userId: string): Promise<StartupView[]> {
       emoji: true,
       tone: true,
       isPublic: true,
+      embedToken: true,
       category: true,
       website: true,
       description: true,
@@ -92,6 +99,7 @@ export async function listStartups(userId: string): Promise<StartupView[]> {
     image: row.connections[0]?.accountImage ?? null,
     connections: row._count.connections,
     isPublic: row.isPublic,
+    embedToken: row.embedToken,
     category: row.category,
     website: row.website,
     description: row.description,
@@ -160,6 +168,39 @@ export async function spectatorScope(
   if (!startup) return null;
   if (!startup.isPublic && startup.userId !== viewerId) return null;
   return { ownerId: startup.userId, scope: { kind: "startup", id: startup.id } };
+}
+
+/**
+ * The scope for an embed token — the public door.
+ *
+ * Holding the token *is* the permission: no session, no viewer identity, no
+ * `isPublic` check. The founder minted it to put their forest on their own
+ * landing page, where every visitor is anonymous, so asking who is looking
+ * would be asking a question the whole feature exists to not need. An unknown
+ * or revoked token is null, which callers turn into a 404 — same as a private
+ * forest, the startup does not exist as far as that holder is concerned.
+ *
+ * Like `spectatorScope`, the grant carries the **owner's** id, because the
+ * book is derived from the owner's connections through the same caches their
+ * own plot uses — an embed on a busy landing page costs the same provider
+ * reads as the founder looking at their dashboard, which is to say none extra.
+ */
+export async function embedScope(
+  token: string,
+): Promise<{ ownerId: string; scope: Scope; startupName: string } | null> {
+  // Tokens are minted as 24 base64url characters; refusing anything else keeps
+  // arbitrary strings out of the indexed lookup.
+  if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) return null;
+  const startup = await prisma.startup.findUnique({
+    where: { embedToken: token },
+    select: { id: true, userId: true, name: true },
+  });
+  if (!startup) return null;
+  return {
+    ownerId: startup.userId,
+    scope: { kind: "startup", id: startup.id },
+    startupName: startup.name,
+  };
 }
 
 /** The `where` clause every scoped connection read shares. */

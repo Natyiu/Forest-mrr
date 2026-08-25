@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { sessionOrDenied } from "@/garden/server/guard";
+import { EMBED_CORS, sessionOrDenied } from "@/garden/server/guard";
 import { liveForest } from "@/lib/revenue/forest";
-import { resolveScope, spectatorScope } from "@/lib/startups";
+import { embedScope, resolveScope, spectatorScope } from "@/lib/startups";
 
 /**
  * Every monthly close, from the same book `/api/garden` served.
@@ -18,11 +18,35 @@ import { resolveScope, spectatorScope } from "@/lib/startups";
  * **`?startup=<id>` follows the same spectator rule as `/api/garden`** — the two
  * are one book, so they must be gated identically or a viewer could take half of
  * a forest they are not allowed the other half of.
+ *
+ * **`?embed=<token>` follows `/api/garden`'s embed rule for the same reason** —
+ * the iframe takes both halves with the one token, before the session gate,
+ * with the same CORS headers and the same 404 for a token that does not open.
  */
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: EMBED_CORS });
+}
+
 export async function GET(request: NextRequest) {
+  const embed = request.nextUrl.searchParams.get("embed");
+  if (embed) {
+    const grant = await embedScope(embed);
+    if (!grant) {
+      return NextResponse.json({ error: "Not found" }, { status: 404, headers: EMBED_CORS });
+    }
+    const forest = await liveForest(grant.ownerId, grant.scope);
+    return NextResponse.json(
+      {
+        snapshots: forest?.snapshots ?? [],
+        source: forest ? "live" : "empty",
+      },
+      { headers: EMBED_CORS },
+    );
+  }
+
   const gate = await sessionOrDenied();
   if (gate.denied) return gate.denied;
 

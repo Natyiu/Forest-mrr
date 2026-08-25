@@ -1,8 +1,8 @@
 import { type NextRequest, NextResponse } from "next/server";
 
-import { sessionOrDenied } from "@/garden/server/guard";
+import { EMBED_CORS, sessionOrDenied } from "@/garden/server/guard";
 import { resolveForest } from "@/lib/revenue/forest";
-import { resolveScope, spectatorScope } from "@/lib/startups";
+import { embedScope, resolveScope, spectatorScope } from "@/lib/startups";
 
 /**
  * The signed-in user's garden — their own subscriptions, or nothing.
@@ -22,11 +22,63 @@ import { resolveScope, spectatorScope } from "@/lib/startups";
  * rather than admitting the startup exists. The book is derived from the owner's
  * connections through the same caches their own plot uses, so a spectator costs
  * no extra provider calls and never opens a sealed key of their own.
+ *
+ * **`?embed=<token>` is the public door, and it opens before the session gate.**
+ * The token is minted per startup on its settings page and holding it *is* the
+ * permission — an embed on a founder's own landing page is read by visitors who
+ * have no account here, so there is no session to ask for. Everything about the
+ * response mirrors the spectate branch (one book, one derivation, one cache),
+ * an unknown or revoked token is the same 404 a private forest is, and the
+ * response carries CORS headers because this is the public API as well as the
+ * iframe's back end: `GET /api/garden?embed=<token>` from any origin.
  */
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
+export function OPTIONS() {
+  return new NextResponse(null, { status: 204, headers: EMBED_CORS });
+}
+
 export async function GET(request: NextRequest) {
+  const embed = request.nextUrl.searchParams.get("embed");
+  if (embed) {
+    const grant = await embedScope(embed);
+    if (!grant) {
+      return NextResponse.json({ error: "Not found" }, { status: 404, headers: EMBED_CORS });
+    }
+
+    const resolved = await resolveForest(grant.ownerId, grant.scope);
+    if (resolved.forest) {
+      return NextResponse.json(
+        {
+          gardenState: resolved.forest.garden,
+          weatherState: resolved.forest.weather,
+          planCatalogue: resolved.forest.planCatalogue,
+          source: "live",
+          live: resolved.forest.source,
+          startup: null,
+          scope: null,
+        },
+        { headers: EMBED_CORS },
+      );
+    }
+    return NextResponse.json(
+      {
+        gardenState: null,
+        source: "empty",
+        connected: resolved.connected,
+        providers: resolved.providers,
+        startup: null,
+        scope: null,
+        note:
+          resolved.connected === 0
+            ? null
+            : `${resolved.providers.join(" · ")} connected, with no subscriptions yet.`,
+      },
+      { headers: EMBED_CORS },
+    );
+  }
+
   const gate = await sessionOrDenied();
   if (gate.denied) return gate.denied;
 

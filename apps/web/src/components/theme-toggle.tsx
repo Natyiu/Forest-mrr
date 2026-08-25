@@ -66,7 +66,11 @@ export function ThemeToggle() {
  * person passing through a login is not there to change settings.
  */
 const OWNS_ITS_OWN = ["/dashboard", "/admin"];
-const NO_TOGGLE = ["/signup", "/login", "/forgot-password", "/reset-password"];
+// The auth screens are a painted poster; `/embed` is a frame inside somebody
+// else's page whose theme the founder pinned in the URL — a corner button
+// writing the visitor's app preference from inside it would be both furniture
+// on a widget and the wrong voice on the wrong surface.
+const NO_TOGGLE = ["/signup", "/login", "/forgot-password", "/reset-password", "/embed"];
 
 export function FloatingThemeToggle() {
   const pathname = usePathname();

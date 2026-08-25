@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 
 /**
@@ -26,6 +27,13 @@ import { useTheme } from "next-themes";
  */
 export function ThemeSync() {
   const { theme, resolvedTheme, setTheme } = useTheme();
+  /**
+   * On `/embed` the mode is the *founder's*, pinned by the URL — that page is a
+   * frame inside a site somebody else designed, and mirroring the visitor's own
+   * preference onto it would repaint a surface the visitor does not own. The
+   * embed page writes `data-mode` itself; this stands aside there and only there.
+   */
+  const isEmbed = usePathname().startsWith("/embed");
 
   /**
    * There are two modes now, light and dark. A browser that stored `system`
@@ -37,13 +45,14 @@ export function ThemeSync() {
   }, [theme, setTheme]);
 
   useEffect(() => {
+    if (isEmbed) return;
     if (resolvedTheme !== "light" && resolvedTheme !== "dark") return;
     const root = document.documentElement;
     root.dataset.mode = resolvedTheme;
     // Native widgets — scrollbars, form controls, the scrubber's thumb — are
     // painted by the browser and this is the only thing that tells it which way.
     root.style.colorScheme = resolvedTheme;
-  }, [resolvedTheme]);
+  }, [isEmbed, resolvedTheme]);
 
   return null;
 }

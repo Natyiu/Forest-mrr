@@ -26,6 +26,19 @@ export async function requireSession(): Promise<NextResponse | null> {
  * their own Stripe: a handler now has to know whose plot it is serving. Returns
  * either the user id or the 401 to return.
  */
+/**
+ * The one exception to the door: the embed branch of `/api/garden` and
+ * `/api/garden/history`, where the key is an `?embed=<token>` capability a
+ * founder minted to put their forest on their own site. Those responses carry
+ * these headers so the same URL works as a public JSON API from any origin —
+ * a `*` origin is correct because the token is the whole credential and no
+ * cookie is ever involved in that branch.
+ */
+export const EMBED_CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, OPTIONS",
+} as const;
+
 export async function sessionOrDenied(): Promise<
   { userId: string; denied?: undefined } | { denied: NextResponse; userId?: undefined }
 > {

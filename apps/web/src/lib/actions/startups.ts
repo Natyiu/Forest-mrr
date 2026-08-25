@@ -1,5 +1,6 @@
 "use server";
 
+import { randomBytes } from "node:crypto";
 import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -221,6 +222,65 @@ export async function setStartupPublic(raw: unknown): Promise<StartupResult> {
   revalidatePath("/dashboard/startups");
   const resolved = await resolveScope(session.user.id);
   return { ok: true, startups: resolved.startups, activeId: resolved.activeId };
+}
+
+const embedInput = z.object({ id: z.string().min(1), enabled: z.boolean() });
+
+export type EmbedResult =
+  | { ok: true; embedToken: string | null }
+  | { ok: false; message: string };
+
+/**
+ * Turn the embed on or off.
+ *
+ * On mints the token if there is none — 18 random bytes as base64url, 24
+ * characters, unguessable — and hands it back so the settings page can show
+ * the snippet without a second round trip. Off deletes it, which is the whole
+ * revocation story: every iframe and API call holding the old token 404s from
+ * that moment, and turning embedding back on mints a *different* token rather
+ * than resurrecting the leaked one.
+ *
+ * Its own action rather than a field on `updateStartup`, for the same reason
+ * `setStartupPublic` is: handing the numbers to the open web is not a rename,
+ * and the form that changes a name must not be able to do it as a side effect.
+ */
+export async function setStartupEmbed(raw: unknown): Promise<EmbedResult> {
+  const session = await requireSession();
+  const parsed = embedInput.safeParse(raw);
+  if (!parsed.success) return { ok: false, message: "That change did not arrive intact." };
+
+  if (!(await ownsStartup(session.user.id, parsed.data.id))) {
+    return { ok: false, message: "That startup is not yours." };
+  }
+
+  if (!parsed.data.enabled) {
+    await prisma.startup.update({
+      where: { id: parsed.data.id },
+      data: { embedToken: null },
+    });
+    revalidatePath("/dashboard/startups");
+    return { ok: true, embedToken: null };
+  }
+
+  const existing = await prisma.startup.findUnique({
+    where: { id: parsed.data.id },
+    select: { embedToken: true },
+  });
+  if (existing?.embedToken) return { ok: true, embedToken: existing.embedToken };
+
+  const token = randomBytes(18).toString("base64url");
+  await prisma.startup.update({
+    where: { id: parsed.data.id },
+    data: { embedToken: token },
+  });
+
+  // An embed's first visitor should meet a forest, not a dash — warm the book
+  // the way going public warms the board's snapshot. Owner's own keys; best effort.
+  const { resolveForest } = await import("@/lib/revenue/forest");
+  await resolveForest(session.user.id, { kind: "startup", id: parsed.data.id }).catch(() => {});
+
+  revalidatePath("/dashboard/startups");
+  return { ok: true, embedToken: token };
 }
 
 /**

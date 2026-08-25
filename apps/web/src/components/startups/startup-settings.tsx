@@ -1,11 +1,13 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
   ArrowLeft,
   BarChart3,
+  Copy,
+  ExternalLink,
   Loader2,
   Plus,
   RefreshCw,
@@ -35,7 +37,13 @@ import {
   removeRevenueConnection,
   verifyRevenueConnection,
 } from "@/lib/actions/revenue";
-import { deleteStartup, setStartupPublic, switchStartup, updateStartup } from "@/lib/actions/startups";
+import {
+  deleteStartup,
+  setStartupEmbed,
+  setStartupPublic,
+  switchStartup,
+  updateStartup,
+} from "@/lib/actions/startups";
 import { Switch } from "@/components/ui/switch";
 import { REVENUE_PROVIDERS, type RevenueProviderId } from "@/lib/revenue/providers";
 import { pageEnabled } from "@/lib/nav-features";
@@ -52,11 +60,14 @@ import { cn } from "@/lib/utils";
  * this page is where a business is set up and maintained: what it is called, which
  * providers it reads, and how to take one away or delete the whole thing.
  *
- * Three bands, in the order somebody needs them: **identity** (the label they will
- * recognise it by in the switcher), **providers** (the keys, with the same
- * re-check / replace / disconnect actions as before), and **the destructive one,
- * last and on its own** — a delete button next to a save button is a mis-click
- * waiting to happen.
+ * Five bands, each a title, one line, and its controls — the long paragraphs this
+ * page used to carry were tried and read as a wall. In order: **make it public**
+ * first, because it is the switch people come here to find and it was getting
+ * lost below the forms; **details** (name, link, category); **providers** (the
+ * keys, with re-check / replace / disconnect); **embed** (the token, snippet and
+ * API addresses, shown only while it is on); and **the destructive one, last and
+ * on its own** — a delete button next to a save button is a mis-click waiting to
+ * happen.
  */
 export function StartupSettings({
   startup,
@@ -79,6 +90,14 @@ export function StartupSettings({
   const [description, setDescription] = useState(startup.description ?? "");
   const [isPublic, setIsPublic] = useState(startup.isPublic);
   const [publicPending, startPublicTransition] = useTransition();
+
+  const [embedToken, setEmbedToken] = useState(startup.embedToken);
+  const [embedPending, startEmbedTransition] = useTransition();
+  // The app's own address, for the snippet. Read after mount because this
+  // component is server-rendered first and the server does not know the origin
+  // the browser reached it on.
+  const [origin, setOrigin] = useState("");
+  useEffect(() => setOrigin(window.location.origin), []);
 
   const [dialog, setDialog] = useState<{ provider?: RevenueProviderId } | null>(null);
   const [confirmRemove, setConfirmRemove] = useState<RevenueConnectionView | null>(null);
@@ -163,6 +182,35 @@ export function StartupSettings({
     });
   }
 
+  function toggleEmbed(next: boolean) {
+    startEmbedTransition(async () => {
+      const result = await setStartupEmbed({ id: startup.id, enabled: next });
+      if (!result.ok) {
+        toast.error(result.message);
+        return;
+      }
+      setEmbedToken(result.embedToken);
+      toast.success(
+        next
+          ? `${startup.name}'s forest can be embedded.`
+          : "Embedding is off — every embed and API call with the old address stopped working.",
+      );
+      router.refresh();
+    });
+  }
+
+  function copy(text: string, what: string) {
+    void navigator.clipboard.writeText(text).then(
+      () => toast.success(`${what} copied`),
+      () => toast.error(`Could not copy the ${what.toLowerCase()}.`),
+    );
+  }
+
+  const embedUrl = embedToken ? `${origin}/embed/${embedToken}` : null;
+  const embedSnippet = embedUrl
+    ? `<iframe\n  src="${embedUrl}"\n  width="100%"\n  height="520"\n  style="border: 0"\n  loading="lazy"\n  title="${startup.name} — live revenue forest"\n></iframe>`
+    : null;
+
   function openForest() {
     startTransition(async () => {
       await switchStartup({ id: startup.id });
@@ -221,12 +269,51 @@ export function StartupSettings({
         </div>
       </div>
 
+      {/* --- the public board, first: it is the switch people came to find --- */}
+      <section className="rounded-xl border border-border bg-card p-4 shadow-elev-1">
+        <div className="flex items-center justify-between gap-4">
+          <div>
+            <h3 className="flex items-center gap-2 text-xs font-semibold">
+              Make it public
+              <Badge variant={isPublic ? "success" : "secondary"}>
+                {isPublic ? "On the board" : "Private"}
+              </Badge>
+            </h3>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              List this forest on the Forests board — name, mark, MRR and tree count.
+              Nothing else.
+            </p>
+          </div>
+          <Switch
+            checked={isPublic}
+            disabled={publicPending}
+            aria-label="List this forest on the public board"
+            onCheckedChange={(next) => {
+              setIsPublic(next);
+              startPublicTransition(async () => {
+                const result = await setStartupPublic({ id: startup.id, isPublic: next });
+                if (!result.ok) {
+                  setIsPublic(!next);
+                  toast.error(result.message);
+                } else {
+                  toast.success(
+                    next
+                      ? `${startup.name} is on the public board.`
+                      : `${startup.name} is private again.`,
+                  );
+                  router.refresh();
+                }
+              });
+            }}
+          />
+        </div>
+      </section>
+
       {/* --- identity ------------------------------------------------------ */}
       <section className="rounded-xl border border-border bg-card p-4 shadow-elev-1">
-        <h3 className="text-xs font-semibold">Name and mark</h3>
+        <h3 className="text-xs font-semibold">Details</h3>
         <p className="mt-0.5 text-[11px] text-muted-foreground">
-          The mark arrives from your payment provider — connect one that publishes a
-          logo and it appears here and everywhere this business is listed.
+          The name, link and category shown wherever this forest is listed.
         </p>
 
         <div className="mt-3 flex flex-wrap items-end gap-3">
@@ -278,18 +365,12 @@ export function StartupSettings({
             maxLength={160}
             className="h-9 text-xs"
           />
-          <p className="mt-1 text-[10px] text-muted-foreground">
-            Shown with the website wherever this forest is listed in the open.
-          </p>
         </div>
 
         <div className="mt-3">
           <label className="mb-1.5 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
             Category
           </label>
-          <p className="mb-1.5 text-[11px] text-muted-foreground">
-            Which shelf this forest stands on when the public board ranks by category.
-          </p>
           <div className="flex flex-wrap items-center gap-1.5">
             <button
               type="button"
@@ -336,7 +417,7 @@ export function StartupSettings({
           <div>
             <h3 className="text-xs font-semibold">Connected providers</h3>
             <p className="mt-0.5 text-[11px] text-muted-foreground">
-              Read-only keys, stored encrypted. This startup&rsquo;s only.
+              Where the trees come from. Read-only keys, stored encrypted.
             </p>
           </div>
           <Button size="sm" className="h-8 text-xs" onClick={() => setDialog({})}>
@@ -347,8 +428,7 @@ export function StartupSettings({
 
         {connections.length === 0 ? (
           <p className="px-4 py-5 text-[11px] text-muted-foreground">
-            Nothing yet. Connect Stripe, Polar, LemonSqueezy, DodoPayment, RevenueCat or
-            Superwall and every subscription becomes a tree.
+            Nothing yet — connect a provider and every subscription becomes a tree.
           </p>
         ) : (
           <ul className="divide-y divide-border/60">
@@ -426,50 +506,92 @@ export function StartupSettings({
         )}
       </section>
 
-      {/* --- the public board -------------------------------------------- */}
+      {/* --- the embed ----------------------------------------------------- */}
       <section className="rounded-xl border border-border bg-card p-4 shadow-elev-1">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h3 className="text-xs font-semibold">Public forest</h3>
-            <p className="mt-0.5 max-w-prose text-[11px] text-muted-foreground">
-              List {startup.name} on the Forests board, where anyone signed in can see
-              its name, its mark, its MRR and how many trees stand on its plot — and
-              compare their own against it. Nothing else is shown: no customers, no
-              plans, no providers. Off, and this forest is yours alone.
+            <h3 className="text-xs font-semibold">Embed on your site</h3>
+            <p className="mt-0.5 text-[11px] text-muted-foreground">
+              Put the live forest on your own page. Anyone with the link can watch it —
+              turn it off to revoke the link.
             </p>
           </div>
           <Switch
-            checked={isPublic}
-            disabled={publicPending}
-            aria-label="List this forest on the public board"
-            onCheckedChange={(next) => {
-              setIsPublic(next);
-              startPublicTransition(async () => {
-                const result = await setStartupPublic({ id: startup.id, isPublic: next });
-                if (!result.ok) {
-                  setIsPublic(!next);
-                  toast.error(result.message);
-                } else {
-                  toast.success(
-                    next
-                      ? `${startup.name} is on the public board.`
-                      : `${startup.name} is private again.`,
-                  );
-                  router.refresh();
-                }
-              });
-            }}
+            checked={Boolean(embedToken)}
+            disabled={embedPending}
+            aria-label="Allow this forest to be embedded"
+            onCheckedChange={toggleEmbed}
           />
         </div>
+
+        {embedUrl && embedSnippet && (
+          <div className="mt-3 space-y-3">
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                  Paste into your page
+                </span>
+                <div className="flex items-center gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-6 px-2 text-[10px]"
+                    onClick={() => copy(embedSnippet, "Embed code")}
+                  >
+                    <Copy className="size-3" />
+                    Copy
+                  </Button>
+                  <Button asChild variant="ghost" size="sm" className="h-6 px-2 text-[10px]">
+                    {/* A plain anchor: the route is public and typedRoutes has no
+                        entry for a tokenised external-facing URL. */}
+                    <a href={embedUrl} target="_blank" rel="noreferrer">
+                      <ExternalLink className="size-3" />
+                      Preview
+                    </a>
+                  </Button>
+                </div>
+              </div>
+              <pre className="overflow-x-auto rounded-lg bg-muted px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-muted-foreground">
+                {embedSnippet}
+              </pre>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                On a dark page, add <span className="font-mono">?theme=dark</span> to the
+                address.
+              </p>
+            </div>
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+                  Or read it as JSON
+                </span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-6 px-2 text-[10px]"
+                  onClick={() => copy(`${origin}/api/garden?embed=${embedToken}`, "API address")}
+                >
+                  <Copy className="size-3" />
+                  Copy
+                </Button>
+              </div>
+              <pre className="overflow-x-auto rounded-lg bg-muted px-3 py-2.5 font-mono text-[10.5px] leading-relaxed text-muted-foreground">
+                {`GET ${origin}/api/garden?embed=${embedToken}\nGET ${origin}/api/garden/history?embed=${embedToken}`}
+              </pre>
+              <p className="mt-1 text-[10px] text-muted-foreground">
+                The garden and its monthly history, open to any origin.
+              </p>
+            </div>
+          </div>
+        )}
       </section>
 
       {/* --- the destructive one, last and alone --------------------------- */}
       <section className="rounded-xl border border-destructive/30 bg-destructive/5 p-4">
         <h3 className="text-xs font-semibold text-destructive">Delete this startup</h3>
-        <p className="mt-0.5 max-w-prose text-[11px] text-muted-foreground">
-          Its {connections.length === 0 ? "settings" : `${connections.length} stored key${connections.length === 1 ? "" : "s"}`}{" "}
-          go with it. Your other {otherStartupCount === 1 ? "startup" : "startups"} are
-          untouched, and any key stays valid at the provider until you revoke it there.
+        <p className="mt-0.5 text-[11px] text-muted-foreground">
+          Removes it and its stored keys. Your other{" "}
+          {otherStartupCount === 1 ? "startup is" : "startups are"} untouched.
         </p>
         <Button
           size="sm"
